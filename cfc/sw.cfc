@@ -4579,8 +4579,10 @@
 							<cfif trim(tssrdt) is not "NULL">#tssrdt#,</cfif>
                             
 						    <cfif trim(tsaddr) is not "NULL">'#PreserveSingleQuotes(tsaddr)#',</cfif>
-						  <!---  <cfif trim(tsspecies) is not "NULL">'#PreserveSingleQuotes(tsspecies)#',</cfif>   --->
                             
+						  <!---  <cfif trim(tsspecies) is not "NULL">'#PreserveSingleQuotes(tsspecies)#',</cfif>   --->
+                            <cfif trim(tsparkway) is not "NULL">'#PreserveSingleQuotes(tsparkway)#',</cfif>
+                            <cfif trim(tssubpos) is not "NULL">'#PreserveSingleQuotes(tssubpos)#',</cfif>
                             
                             
 							<cfif trim(tstype) is not "NULL">#tstype#,</cfif>
@@ -4617,13 +4619,19 @@
 						Permit_Issuance_Date = <cfif tspidt is "NULL">NULL<cfelse>#tspidt#</cfif>,
 						Stump_Removal_Date = <cfif tssrdt is "NULL">NULL<cfelse>#tssrdt#</cfif>,
 						Address = <cfif tsaddr is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsaddr)#'</cfif>,
-						Species = <cfif tsspecies is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsspecies)#'</cfif>,
+                        
+                        
+					<!---	Species = <cfif tsspecies is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsspecies)#'</cfif>,  --->
+                        
+                        PARKWAY_TREEWELL_SIZE = <cfif tsparkway is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsparkway)#'</cfif>,
+                        SUB_POSITION = <cfif tssubpos is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tssubpos)#'</cfif>,
+                        
 						Type = <cfif tstype is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tstype)#'</cfif>,
                         
                         
                         <!--- ---------- joe hu  Feb 2019 multiple update --------------------  --->
                        Removals_Existing_Tree_Condition = <cfif tsExistingCondition is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsExistingCondition)#'</cfif>,
-                        Attempted_Tree_Preservation = <cfif tsAttemptedPreservation is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsAttemptedPreservation)#'</cfif>,
+                 <!---       Attempted_Tree_Preservation = <cfif tsAttemptedPreservation is "NULL">NULL<cfelse>'#PreserveSingleQuotes(tsAttemptedPreservation)#'</cfif>,  --->
                         <!--- ---------- joe hu  Feb 2019 multiple update --------------------  --->
                         
                         
