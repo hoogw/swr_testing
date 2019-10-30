@@ -17,6 +17,7 @@
 </cfif>
 </cfoutput>
 
+
 <cfscript>
 
     outdir = "D:/sidewalk_repair/downloads/";
@@ -35,12 +36,23 @@
     , plant( loc, group_no, tree_no, action_type ) as (
         select * from good where action_type = 'Planting'
     )
-    , report_line ( site, line, rloc, rgroup_no, rtree_no, raction_type, tloc, tgroup_no, ttree_no, taction_type ) as (
+	, preserved2 ( loc, group_no, tree_no, action_type ) as (
+		select * from good where action_type  = 'Root Pruning / Shaving'
+	)
+    , preserved ( loc, preserved ) as (
+        select loc, count(*) from good where action_type  = 'Root Pruning / Shaving' group by loc
+    ) 
+    , report_line0 ( site, line, rloc, rgroup_no, rtree_no, raction_type, tloc, tgroup_no, ttree_no, taction_type ) as (
     select coalesce(g0.loc, g1.loc) site, coalesce(g0.tree_no, g1.tree_no) line, * 
     from removal g0
     full outer join plant g1 on g0.loc = g1.loc and g0.group_no = g1.group_no and g0.tree_no = g1.tree_no
     )
-
+    , report_line ( site, line, rloc, rgroup_no, rtree_no, raction_type, tloc, tgroup_no, ttree_no, taction_type, ploc, pgroup_no, ptree_no, paction_type ) as (
+    select coalesce(g0.site, g2.loc) site, coalesce(g0.line, g2.tree_no ) line, rloc, rgroup_no, rtree_no, raction_type, tloc, tgroup_no, ttree_no, taction_type, g2.loc, g2.group_no, g2.tree_no, g2.action_type 
+    from report_line0 g0
+	full outer join preserved2 g2 on g0.site = g2.loc and g0.line = g2.tree_no
+    )
+	--select * from report_line order by 1, 2
     select site, line
         , coalesce( r.site_type, t.site_type )
         , a.Type
@@ -53,31 +65,38 @@
 
         , r.TREE_NO, r.SPECIES, r.TREE_SIZE, r.PERMIT_ISSUANCE_DATE, r.TREE_REMOVAL_DATE, r.ADDRESS
             , info.TREE_REMOVAL_CONTRACTOR, info.TREE_REMOVAL_NOTES
-        , t.TREE_NO, t.SPECIES, t.TREE_BOX_SIZE, t.PERMIT_ISSUANCE_DATE, t.TREE_PLANTING_DATE, t.START_WATERING_DATE, t.END_WATERING_DATE, null
+        , t.TREE_NO
+            , case t.OFFSITE when 'yes' then 'Y' else '' end 
+            , t.SPECIES, t.TREE_BOX_SIZE, info.Tree_Planting_Assigned_Contractor_Date, t.PERMIT_ISSUANCE_DATE, t.TREE_PLANTING_DATE, t.START_WATERING_DATE, t.END_WATERING_DATE, null
             , t.ADDRESS
             , info.TREE_PLANTING_CONTRACTOR
-            , info.TREE_REMOVAL_NOTES
-        , coalesce(ee.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0) + coalesce(qc.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0) + coalesce(co.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0 ) root_prune
+		, p.TREE_NO, p.SPECIES, p.PERMIT_ISSUANCE_DATE, p.ROOT_PRUNING_DATE
+
+        , coalesce( pr.preserved, 0)
         , coalesce(ee.[EXISTING_STUMP_REMOVAL_QUANTITY],0) + coalesce(qc.[EXISTING_STUMP_REMOVAL_QUANTITY],0) + coalesce(co.[EXISTING_STUMP_REMOVAL_QUANTITY],0 )
         , coalesce(ee.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0) + coalesce(qc.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0) + coalesce(co.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0 ) canopy_prune
         , info.Root_Barrier_Lock 
+
     from report_line rl
     left join vwHDRAssessmentTracking a on rl.site = a.Location_No
     left join vwHDRTreeSiteInfo info on rl.site = info.Location_No
     left join vwHDRTreeList r on rl.site = r.Location_No and rl.rgroup_no = r.group_no and rl.rtree_no = r.TREE_NO and r.ACTION_TYPE = 'Removal'
     left join vwHDRTreeList t on rl.site = t.location_no and rl.tgroup_no = t.group_no and rl.ttree_no = t.tree_no and t.ACTION_TYPE = 'Planting'
+	left join vwHDRTreeList p on rl.site = p.Location_No and rl.pgroup_no = p.GROUP_NO and rl.ptree_no = p.TREE_NO and p.ACTION_TYPE = 'Root Pruning / Shaving'
     left join vwHDREngineeringEstimate ee on rl.site = ee.Location_No
     left join vwHDRQCQuantity qc on rl.site = qc.Location_No
     left join vwHDRChangeOrders co on rl.site = co.Location_No
+    left join preserved pr on rl.site = pr.loc
     order by 1,2" );
 
     trees = myQuery.execute().getResult();
 
     myXls = SpreadsheetNew( "Tree Data" );
-    SpreadsheetAddRow( myXls, "Removal", 1,13);
-    SpreadsheetSetCellValue( myXls, "Removal", 1, 13);
-    SpreadsheetSetCellValue( myXls, "Planting", 1,21);
-    SpreadsheetAddRow( myXls, "s,l, Type, Sub Type, Package, Site No, Facility Name, Address, ZIP, Council District, Construction Start Date, Construction Completed Date, Ready to Plant, Tree No, Species, Size, Permit Issunce Date, Tree Removal Date, Address, Contractor, Notes, Tree No, Species, Box Size, Permit Issuance Date, Tree Planting Date, Start Watering Date, End Watering Date, Most Recent Watering Date, Addres, Contractor, Notes, Tree Root Pruning/Shaving, Existing Stump Removal, Tree Canopy Pruning, Root Control Barrier Installed", 2,1);
+    SpreadsheetAddRow( myXls, "Removal", 1,14);
+    SpreadsheetSetCellValue( myXls, "Removal", 1, 14);
+    SpreadsheetSetCellValue( myXls, "Planting", 1, 22);
+    SpreadsheetSetCellValue( myXls, "Preserved", 1, 34);
+    SpreadsheetAddRow( myXls, "s,l, Type, Sub Type, Package, Site No, Facility Name, Facility Address, ZIP, Council District, Construction Start Date, Construction Completed Date, Ready to Plant, Tree No, Species, Size, Permit Issuance Date, Tree Removal Date, Address, Contractor, Notes, Tree No, Offsite, Species, Box Size, Assign Date, Permit Issuance Date, Tree Planting Date, Start Watering Date, End Watering Date, Most Recent Watering Date, Addres, Contractor, Tree No, Species, Permit Issuance Date, Root Prune Date, Trees Preserved, Existing Stump Removal, Tree Canopy Pruning, Root Control Barrier Installed", 2,1);
     SpreadsheetAddRows( myXls, trees );
 
     // pretty print. merge cells
@@ -91,6 +110,13 @@
 
     for( g in ff ) {
         end_r = end_r + g["m"];    
+
+        // blank out counts to support Excl operations
+        // for( d=start_r+1; d<=end_r; d++ ) {
+        //     SpreadsheetSetCellValue( myXls, "", d, 33);
+        //     SpreadsheetSetCellValue( myXls, "", d, 34);
+        //     SpreadsheetSetCellValue( myXls, "", d, 35);
+        //}
         SpreadsheetMergeCells( myXls, start_r, end_r, 3,3);
         SpreadsheetMergeCells( myXls, start_r, end_r, 4,4);
         SpreadsheetMergeCells( myXls, start_r, end_r, 5,5);
@@ -102,35 +128,44 @@
         SpreadsheetMergeCells( myXls, start_r, end_r, 11,11);
         SpreadsheetMergeCells( myXls, start_r, end_r, 12,12);
         SpreadsheetMergeCells( myXls, start_r, end_r, 13,13);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 14,14);
+        // SpreadsheetMergeCells( myXls, start_r, end_r, 14,14);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 20,20);
         SpreadsheetMergeCells( myXls, start_r, end_r, 21,21);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 22,22);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 31,31);
         SpreadsheetMergeCells( myXls, start_r, end_r, 32,32);
         SpreadsheetMergeCells( myXls, start_r, end_r, 33,33);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 34,34);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 35,35);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 36,36);
-        SpreadsheetMergeCells( myXls, start_r, end_r, 37,37);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 38,38);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 39,39);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 40,40);
+        SpreadsheetMergeCells( myXls, start_r, end_r, 41,41);
         start_r = start_r + g["m"];
     }
     SpreadsheetDeleteColumn( myXls, 1);
     SpreadsheetDeleteColumn( myXls, 2);
     
 
-    //
+    // summary counts
     totalQuery = new Query( datasource = "sidewalk" );
-    totalQuery.setSql( "with good ( action_type, Tree_Removal_Date, Tree_Planting_Date, t_type, loc_no ) as (
-        select action_type, Tree_Removal_Date, Tree_Planting_Date, [type], Location_No
+    totalQuery.setSql( "with good ( location_no, action_type, planted_tree_condition, has_removal, has_planting ) as (
+        select Location_No, action_type, planted_tree_condition,
+        case when TREE_REMOVAL_DATE is null then 0 else 1 end,
+        case when TREE_PLANTING_DATE is null then 0 else 1 end
         from vwHDRTreeList
-        where deleted = 0 or deleted is null
+        where DELETED = 0
     )
-    select 11, 'Total Number of Trees Removed', count(*) from good where ACTION_TYPE = 'Removal' and TREE_REMOVAL_DATE is not null and t_type in ( 'BSS', 'RAP', 'General Service', 'BSS - Dead Tree', 'BSS - Volunteer' )
-	union
-    select 21, 'Total Number of Tress to be Removed', count(*) from good inner join vwHDRAssessmentTracking a on loc_no = a.Location_No where ACTION_TYPE = 'Removal' AND TREE_REMOVAL_DATE is null and t_type in ( 'BSS', 'RAP', 'General Service', 'BSS - Dead Tree', 'BSS - Volunteer' ) and ( a.Package_No is not null )
+
+    select 1, 'Total Number of Trees Preserved', count(*) from good 
+    inner join vwHDRAssessmentTracking a on good.location_no = a.Location_No
+    where action_type  = 'Root Pruning / Shaving' and a.Construction_Completed_Date is not null
+
     union
-    select 31, 'Total Number of Trees Planted', count(*) from good where ACTION_TYPE = 'Planting' AND TREE_PLANTING_DATE is not null and t_type in ( 'BSS', 'RAP', 'General Service' )
+    select 2, 'Total Number of Trees Removed', count(*) from good where action_type = 'removal' and has_removal = 1
+
     union
-    select 41, 'Total Number of Trees to be Planted', count(*) from good inner join vwHDRAssessmentTracking a on loc_no = a.Location_No where ACTION_TYPE = 'Planting' AND TREE_PLANTING_DATE is null and t_type in ( 'BSS', 'RAP', 'General Service' ) and ( a.Package_No is not null ) and ( a.Construction_Completed_Date is not null ) " );
+    select 3, 'Total Number of Trees Planted', count(*) from good where action_type = 'planting' and has_planting = 1
+
+    union
+    select 4, 'Total Number of Trees Planted identified as Dead/Failed', COUNT(*) from good where action_type = 'planting' and has_planting = 1 and planted_tree_condition = 'dead' " );
 
     summary = totalQuery.execute().getResult();
 
@@ -143,27 +178,19 @@
     SpreadsheetDeleteColumn( myXls, 1);
     SpreadsheetShiftColumns( myXls, 2,3, -1);
 
-    totalPruneQuery = new Query( datasource = "sidewalk" );
-    totalPruneQuery.setSql ("select 
-        sum( coalesce(ee.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0) + coalesce(qc.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0) + coalesce(co.[TREE_ROOT_PRUNING_/_SHAVING_(PER_TREE)_QUANTITY],0 )) root_prune
-        , sum( coalesce(ee.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0) + coalesce(qc.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0) + coalesce(co.[TREE_CANOPY_PRUNING_(PER_TREE)_QUANTITY],0 )) canopy_prune
-        from vwHDRTreeSiteInfo rl
-        left join vwHDREngineeringEstimate ee on rl.Location_No = ee.Location_No
-        left join vwHDRQCQuantity qc on rl.Location_No = qc.Location_No
-        left join vwHDRChangeOrders co on rl.Location_No = co.Location_No");
-    tpp = totalPruneQuery.execute().getResult();
-    
-    SpreadsheetAddRow( myXls, "Total Number of Root Prune", 9,1); SpreadsheetSetCellValue( myXls, tpp.root_prune[1], 9,2);
-    SpreadsheetAddRow( myXls, "Total Number of Canopy Prune", 10,1); SpreadsheetSetCellValue( myXls, tpp.canopy_prune[1], 10,2);
-
     // by programs
-    totalQuery.setSql("select site_type, site_subtype, 
-            sum( case when action_type = 'Planting' and tree_planting_date is not null then 1 else 0 end ) planted,
-            sum( case when action_type = 'Planting' and tree_planting_date is null then 1 else 0 end ) pplant,
-            sum( case when action_type = 'Removal' and tree_removal_date is not null then 1 else 0 end ) removed,
-            sum( case when action_type = 'Removal' and tree_removal_date is null then 1 else 0 end ) premove
-        from vwHDRTreeList
-        where deleted = 0 or deleted is null
+    totalQuery.setSql("with good ( package_no, ccdate, action_type, site_type, site_subtype, tree_planting_date, tree_removal_date, t_type, offsite) as
+        ( 
+            select a.Package_No, a.Construction_Completed_Date, t.ACTION_TYPE, t.Site_Type, t.Site_Subtype, t.TREE_PLANTING_DATE, t.TREE_REMOVAL_DATE, t.TYPE, t.Offsite
+            from vwHDRTreeList t
+            inner join vwHDRAssessmentTracking a on t.Location_No = a.Location_No
+            where t.DELETED = 0 OR t.DELETED IS NULL 
+        )
+        select site_type, site_subtype
+            , sum( case when action_type = 'Planting' and tree_planting_date is not null then 1 else 0 end ) planted
+            , sum( case when action_type = 'Removal' and tree_removal_date is not null then 1 else 0 end ) removed
+            , sum( case when action_type  = 'Root Pruning / Shaving' and ccdate is not null then 1 else 0 end ) preserved
+        from good
         group by site_type, site_subtype
         order by site_type, site_subtype");
 
@@ -173,110 +200,120 @@
     SpreadsheetAddRow( myXls, "Sidewalk Repair Program" ,1,1);
     SpreadsheetAddRow( myXls, "Tree Report", 2,1);
     SpreadsheetAddRow( myXls, Now() ,3,1);
-    SpreadsheetAddRow( myXls, "Site Type, Site Subtype, Planted, Pending Planting, Removed, Pending Remove", 5,1);
+    SpreadsheetAddRow( myXls, "Site Type,Site Subtype,Planted,Removed,Preserved", 5,1);
     SpreadsheetAddRows( myXls, prgms, 6,1);
-    // SpreadsheetDeleteColumn( myXls, 1);
-    // SpreadsheetShiftColumns( myXls, 2,3, -1);
 
-    totalQuery.setSql("select site_type, site_subtype, offsite,
-            case when site_type = 'Rebate' then 'Rebate' else 'Sidewalk' end prgm,
-            sum( case when action_type = 'Planting' and offsite='no' and tree_planting_date is not null then 1 else 0 end ) planted,
-            sum( case when action_type = 'Planting' and offsite='no' and tree_planting_date is null then 1 else 0 end ) pplant,
-            sum( case when action_type = 'Planting' and offsite='yes' and tree_planting_date is not null then 1 else 0 end ) offplanted,
-            sum( case when action_type = 'Planting' and offsite='yes' and tree_planting_date is null then 1 else 0 end ) offpplant,
-            sum( case when action_type = 'Removal' and tree_removal_date is not null then 1 else 0 end ) removed,
-            sum( case when action_type = 'Removal' and tree_removal_date is null then 1 else 0 end ) premove
-        from vwHDRTreeList
-        where deleted = 0 or deleted is null
-        group by site_type, site_subtype, offsite
-        order by site_type, site_subtype");
+    // replacement
+    totalQuery.setSql("with good ( location_no, ccdate, action_type, site_type, site_subtype, tree_planting_date, tree_removal_date, t_type, offsite, contractor, assigned ) as
+        ( 
+            select a.Location_No, 
+                case when a.Construction_Completed_Date is null then 0 else 1 end, 
+                t.ACTION_TYPE, t.Site_Type, t.Site_Subtype, t.TREE_PLANTING_DATE, t.TREE_REMOVAL_DATE, t.TYPE, t.Offsite, 
+                case when s.Tree_Planting_Contractor_Type = 'bss-city plants' then 1 else 0 end, 
+                case when s.Tree_Planting_Assigned_Contractor_Date is null then 0 else 1 end
+            from vwHDRTreeList t
+            inner join vwHDRTreeSiteInfo s on t.Location_No = s.Location_No
+            inner join vwHDRAssessmentTracking a on t.Location_No = a.Location_No
+            where t.DELETED = 0 OR t.DELETED IS NULL 
+        ), 
+                
+        fact ( location_no, ccdate, contractor, assigned, removes, planted, plantings ) as (
+        select location_no, ccdate, contractor, assigned,
+            sum( case when action_type = 'removal' and tree_removal_date is not null then 1 else 0 end ) removes,
+            sum( case when action_type = 'planting' and tree_planting_date is not null then 1 else 0 end ) planted,
+            sum( case when action_type = 'planting' and tree_planting_date is not null then 1 else 0 end ) plantings
+        from good
+        -- where tree_planting_date is null and tree_removal_date is null and contractor = 'bss-city plants' and ccdate is not null 
+        group by location_no, ccdate, contractor, assigned
+        ),
+
+        pending ( location_no, ccdate, contractor, assigned, removes, planted, plantings, missing ) as (
+            select location_no, ccdate, contractor, assigned, removes, planted, plantings, ( removes *2 ) - planted
+            from fact
+            where removes * 2 > planted
+        )
+
+        select --site_type, site_subtype, 
+        offsite,
+        sum( case when action_type = 'Root Pruning / Shaving' and ccdate is not null then 1 else 0 end ) preserved,
+        sum( case when action_type = 'removal' and tree_removal_date is not null then 1 else 0 end ) removed,
+        sum( case when action_type = 'planting' and tree_planting_date is not null then 1 else 0 end ) planted,
+
+            ( select coalesce ( sum( missing ), 0 ) from pending where contractor = 1 and assigned = 1 ) a_city_plants,
+            ( select coalesce ( sum( missing ), 0 ) from pending where ccdate = 1 and contractor = 1 and assigned = 0 ) p_a_city_plants,
+            ( select coalesce ( sum( missing ), 0 ) from pending where ccdate = 0 ) p_consturction
+
+        from good
+        group by offsite");
 
     updates = totalQuery.execute().getResult();
 
-    rupdate = new Query( dbtype = "query" );
-    rupdate.setAttributes( updates = updates );
-    rupdate.setSql( "select sum(planted) p, sum(pplant) pp, sum(offplanted) op, sum(offpplant) opp, sum(removed) r, sum(premove) pr, prgm from updates where prgm = 'Rebate' group by prgm" );
-    rrst = rupdate.execute().getResult();
-
     supdate = new Query( dbtype = "query" );
     supdate.setAttributes( updates = updates );
-    supdate.setSql( "select sum(planted) p, sum(pplant) pp, sum(offplanted) op, sum(offpplant) opp, sum(removed) r, sum(premove) pr, prgm from updates where prgm = 'Sidewalk' group by prgm" );
+    supdate.setSql( "select sum(preserved) pr, sum(removed) r, sum(planted) pl, sum(a_city_plants) a  from updates" );
     srst = supdate.execute().getResult();
 
-
+    //
     SpreadsheetCreateSheet( myXls, "Tree Replacement Update" );
     SpreadsheetSetActiveSheet( myXls, "Tree Replacement Update" );
+    SpreadsheetAddRow( myXls, "Sidewalk Repair Program" ,1,1);
     SpreadsheetAddRow( myXls, Now() ,2,1);
     SpreadsheetAddRow( myXls, "Tree Replacement Update", 3,1);
     SpreadsheetMergeCells( myXls, 3,3, 1,7 );
 
-    SpreadsheetAddRow( myXls, "Sidewalk Program, Sidewalk Program, Rebate Program, Rebate Program, Total", 5,3 );
-    SpreadsheetAddRow( myXls, "Tree Removals, Trees Removed, 0,0,0,0,0", 6,1);
-    SpreadsheetAddRow( myXls, "Tree Removals, Trees Pending Removal, 0,0,0,0,0", 7,1);
-    SpreadsheetAddRow( myXls, "Tree Planted, Trees Planted - Onsite, 0,0,0,0,0", 8,1);
-    SpreadsheetAddRow( myXls, "Tree Planted, Trees Planted - Offsite, 0,0,0,0,0", 9,1);
-    SpreadsheetAddRow( myXls, "Pending Planting, Trees Pending Planting - Onsite, 0,0,0,0,0", 10,1);
-    SpreadsheetAddRow( myXls, "Pending Planting, Trees Pending Planting - Offsite, 0,0,0,0,0", 11,1);
+    SpreadsheetAddRow( myXls, "Sidewalk Program, Sidewalk Program", 5,3 );
+    SpreadsheetAddRow( myXls, "Preserved Trees,Preserved Trees,0", 6,1);
+    SpreadsheetAddRow( myXls, "Removed Trees,Removed Trees,0", 7,1);
+    SpreadsheetAddRow( myXls, "Planted Trees,Trees Planted - Onsite, 0,0", 8,1);
+    SpreadsheetAddRow( myXls, "Planted Trees,Trees Planted - Offsite, 0,0", 9,1);
+    SpreadsheetAddRow( myXls, "Pending Planting,Assigned to City Plants, 0,0", 10,1);
+    SpreadsheetAddRow( myXls, "Pending Planting,Pending Assignments to City Plants, 0,0", 11,1);
+    SpreadsheetAddRow( myXls, "Pending Planting,Pending Construction Completion, 0,0", 12,1);
+    SpreadsheetAddRow( myXls, "Pending Planting,Other Pending, 0,0", 13,1);
 
+    // SpreadsheetAddRows( myXls, updates, 20,1 );
 
-    // Rebate
-    if ( rrst.recordcount > 0 ) {
-        SpreadsheetSetCellValue( myXls, rrst.r[1], 6,5 );
-        SpreadsheetSetCellValue( myXls, rrst.pr[1], 7,5 );
-        SpreadsheetSetCellValue( myXls, rrst.p[1], 8,5 );
-        SpreadsheetSetCellValue( myXls, rrst.op[1], 9,5 );
-        SpreadsheetSetCellValue( myXls, rrst.pp[1], 10,5 );
-        SpreadsheetSetCellValue( myXls, rrst.opp[1], 11,5 );
-
-        SpreadsheetSetCellFormula( myXls, "SUM(E6:E7)", 6,6);
-        SpreadsheetSetCellFormula( myXls, "SUM(E8:E9)", 8,6);
-        SpreadsheetSetCellFormula( myXls, "SUM(E10:E11)", 10,6);
-    }
-
+    //
     // sidewalk
     if ( srst.recordcount > 0 ) {
-        SpreadsheetSetCellValue( myXls, srst.r[1], 6,3 );
-        SpreadsheetSetCellValue( myXls, srst.pr[1], 7,3 );
-        SpreadsheetSetCellValue( myXls, srst.p[1], 8,3 );
-        SpreadsheetSetCellValue( myXls, srst.op[1], 9,3 );
-        SpreadsheetSetCellValue( myXls, srst.pp[1], 10,3 );
-        SpreadsheetSetCellValue( myXls, srst.opp[1], 11,3 );
+        SpreadsheetSetCellValue( myXls, srst.pr[1], 6,3 );
+        SpreadsheetSetCellValue( myXls, srst.r[1], 7,3 );
+        SpreadsheetSetCellValue( myXls, updates.planted[2], 8,3 );
+        SpreadsheetSetCellValue( myXls, updates.planted[1], 9,3 );
+        SpreadsheetSetCellValue( myXls, srst.pl[1], 8,4);
 
-        SpreadsheetSetCellFormula( myXls, "SUM(C6:C7)", 6,4);
-        SpreadsheetSetCellFormula( myXls, "SUM(C8:C9)", 8,4);
-        SpreadsheetSetCellFormula( myXls, "SUM(C10:C11)", 10,4);
-    }
+        SpreadsheetSetCellValue( myXls, updates.a_city_plants[1], 10,3 );
+        SpreadsheetSetCellValue( myXls, updates.p_a_city_plants[1], 11,3 );
+        SpreadsheetSetCellValue( myXls, updates.p_consturction[1], 12,3 );
 
-    SpreadsheetSetCellFormula( myXls, "SUM(D6,F6)", 6,7);
-    SpreadsheetSetCellFormula( myXls, "SUM(D8,F8)", 8,7);
-    SpreadsheetSetCellFormula( myXls, "SUM(D10,F10)", 10,7);
-    
+        SpreadsheetSetCellFormula( myXls, "(c7*2)-d8-sum(c10:c12)", 13,3 );
+    }    
     
     shet = myXls.getWorkBook().getSheetAt( javacast("int", 3));
         for( i=0; i<7; i++)
             shet.autoSizeColumn( javacast("int", i));
 
     SpreadsheetMergeCells( myXls, 5,5, 3,4 );
-    SpreadsheetMergeCells( myXls, 5,5, 5,6 );
+    SpreadsheetMergeCells( myXls, 6,6, 3,4 );
+    SpreadsheetMergeCells( myXls, 7,7, 3,4 );
+    SpreadsheetMergeCells( myXls, 10,10, 3,4 );
+    SpreadsheetMergeCells( myXls, 11,11, 3,4 );
+    SpreadsheetMergeCells( myXls, 12,12, 3,4 );
+    SpreadsheetMergeCells( myXls, 13,13, 3,4 );
 
-    SpreadsheetMergeCells( myXls, 6,7, 1,1 );
+    SpreadsheetMergeCells( myXls, 6,6, 1,2 );
+    SpreadsheetMergeCells( myXls, 7,7, 1,2 );
     SpreadsheetMergeCells( myXls, 8,9, 1,1 );
-    SpreadsheetMergeCells( myXls, 10,11, 1,1 );
+ 
+    SpreadsheetMergeCells( myXls, 10,13, 1,1 );
 
-    SpreadsheetMergeCells( myXls, 6,7, 4,4 );
     SpreadsheetMergeCells( myXls, 8,9, 4,4 );
-    SpreadsheetMergeCells( myXls, 10,11, 4,4 );
 
-    SpreadsheetMergeCells( myXls, 6,7, 6,6 );
-    SpreadsheetMergeCells( myXls, 8,9, 6,6 );
-    SpreadsheetMergeCells( myXls, 10,11, 6,6 );
+    myFormat = StructNew();
+    myFormat.alignment = "center";
+    myFormat.verticalalignment = "vertical_center";
+    SpreadsheetFormatCellRange( myXls, myFormat, 5,3, 13,4 );
 
-    SpreadsheetMergeCells( myXls, 6,7, 7,7 );
-    SpreadsheetMergeCells( myXls, 8,9, 7,7 );
-    SpreadsheetMergeCells( myXls, 10,11, 7,7 );
-
-    // SpreadsheetAddRows( myXls, rrst, 15,1);
-    // SpreadsheetAddRows( myXls, srst, 16,1);
 
     SpreadsheetSetActiveSheet( myXls, "Summary" );    
     SpreadsheetWrite( myXls, myFile, "yes" );

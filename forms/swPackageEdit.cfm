@@ -23,6 +23,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
 
+
+
+
+
+<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+
+
+
+
+
+
 <cfoutput>
 <script language="JavaScript1.2" src="../js/fw_menu.js"></script>
 <script language="JavaScript" src="../js/isDate.js" type="text/javascript"></script>
@@ -32,6 +43,8 @@
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 <cfinclude template="../css/css.cfm">
+
+
 
 
 </head>
@@ -54,6 +67,18 @@ SELECT * FROM tblPackages WHERE id = #url.pid#
 <cfquery name="getSites" datasource="#request.sqlconn#" dbtype="ODBC">
 SELECT * FROM vwSites WHERE package_no = #pno# AND package_group = '#pgroup#' ORDER BY location_no
 </cfquery>
+
+
+
+<!--- joe hu 9/23/2019 added soc date  --->
+
+<!--- Get Associate Sites --->
+<cfquery name="getSites_by_package" datasource="#request.sqlconn#" dbtype="ODBC">
+SELECT count(*) as count FROM vwSites WHERE package_no = #pno# AND Removed is null AND package_group = '#pgroup#'
+</cfquery>
+<!--- joe hu 9/23/2019 added soc date  --->
+
+
 
 <!--- Get Yes No Values --->
 <cfquery name="getYesNo" datasource="#request.sqlconn#" dbtype="ODBC">
@@ -191,6 +216,28 @@ SELECT sum(engineers_estimate_total_cost) as cost FROM tblEngineeringEstimate WH
 							</cfif>
 						</td>
 						
+                        
+                        
+                        <!--- joe hu 9/23/2019  --->
+                                
+                                <cfset _sites = getSites_by_package.count>
+                                <td class="right" style="width:90px;">
+                                
+                                       <span class="pagetitle"> 
+                                       
+                                            #_sites#
+                                       
+                                         </span>
+                                
+                                       
+                                </td>
+                                <th class="drk middle">Sites</th>
+                        
+                         <!--- joe hu 9/23/2019  --->
+                         
+                         
+                        
+                        
 						<td align="right" style="width:90px;">
 							<cfif session.user_level gt 2>
 							<a href="" class="button buttonText" style="height:13px;width:60px;padding:1px 0px 1px 0px;" 
@@ -276,12 +323,35 @@ SELECT sum(engineers_estimate_total_cost) as cost FROM tblEngineeringEstimate WH
 				<td colspan="4" style="padding:0px 0px 0px 0px;">
 					<table cellpadding="0" cellspacing="0" border="0">
 						<tr>
-						<th class="left middle" style="width:#w3#px;">Notice to Proceed:</th>
+                        
+                        
+						<th class="left middle" style="width:#w3-50#px;">NTP:</th>
 						<td style="width:2px;"></td>
 						<cfset v = ""><cfif getPackage.notice_to_proceed_date is not ""><cfset v = dateformat(getPackage.notice_to_proceed_date,"MM/DD/YYYY")></cfif>
 						<td class="frm"  style="width:#w2#px;">
 						<input type="Text" name="sw_ntp" id="sw_ntp" value="#v#" style="width:#w2-5#px;text-align:center;" class="rounded" #dis#></td>
 						<td style="width:2px;"></td>
+                        
+                        <!--- joe hu 9/23/2019 added soc date  --->
+                        
+                                <th class="left middle" style="width:#w3-50#px;">SOC:</th>
+                                <td style="width:2px;"></td>
+                                
+                                
+                                 
+                                <cfset v = ""><cfif getPackage.Statement_of_Completion_Date is not ""><cfset v = dateformat(getPackage.Statement_of_Completion_Date,"MM/DD/YYYY")></cfif>
+                                 
+                               
+                                
+                                <td class="frm"  style="width:#w2#px;">
+                                <input type="Text" name="sw_soc" id="sw_soc" value="#v#" style="width:#w2-5#px;text-align:center;" class="rounded" #dis#></td>
+                                <td style="width:2px;"></td>
+                        
+                        <!--- End ---- joe hu 9/23/2019 added soc date  --->
+                        
+                        
+                        
+                        
 						<th class="left middle" style="height:30px;width:#w4+7#px;">Performance Bond:</th>
 						<td style="width:2px;"></td>
 						<td class="frm"  style="width:70px;">
@@ -867,6 +937,11 @@ SELECT sum(engineers_estimate_total_cost) as cost FROM tblEngineeringEstimate WH
 </div>
 </cfoutput>
 
+
+
+
+
+
 	
 <div id="msg7" class="box" style="top:40px;left:1px;width:350px;height:80px;display:none;z-index:505;">
 <a id="close" href="" class="close" style="z-index:505;top:3px;right:4px;" onClick="$('#chr(35)#msg7').hide();return false;"><img src="../images/close_icon.png" height="8" width="8" title="Close Tools"  border="0" class="closex"></a>
@@ -1021,6 +1096,9 @@ $(function() {
 	$( "#sw_co" ).datepicker();
 	$( "#sw_precon" ).datepicker();
 	$( "#sw_ntp" ).datepicker();
+	
+	$( "#sw_soc" ).datepicker();
+	
 	$( "#sw_swalk" ).datepicker();
 	$( "#sw_tdn" ).datepicker();
 	$( "#sw_bad" ).datepicker();

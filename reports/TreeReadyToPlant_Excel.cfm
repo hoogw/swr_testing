@@ -31,16 +31,15 @@
     myFile = outdir & "ttt.xls";
 
     myQuery = new Query( datasource = "sidewalk" );
-    myQuery.setSql("select a.package, a.location_no, a.name, a.address, i.tree_planting_contractor, i.ready_to_plant, t.address 'taddress', t.species, t.parkway_treewell_size, t.overhead_wires, t.sub_position, t.offsite, t.Tree_Planting_Date
+    myQuery.setSql("select coalesce( a.package, '') package, a.location_no, a.Council_District, a.name, a.address, i.tree_planting_contractor, i.ready_to_plant, t.site_type, t.address 'taddress', t.species, t.parkway_treewell_size, t.overhead_wires, t.sub_position, t.offsite, t.Tree_Planting_Date
     from  vwHDRTreeSiteInfo i
     inner join vwHDRTreeList t on i.location_no = t.location_no
     inner join vwHDRAssessmentTracking a on i.location_no = a.location_no
     where t.action_type = 'planting' and i.ready_to_plant = 1
-    and a.package <> ''
     and t.[type] in ( 'BSS', 'RAP', 'General Service' ) 
     and a.Construction_Completed_Date is not null
     and i.[pre_inspection_date] BETWEEN :planting_start AND :planting_end
-    order by a.package, i.location_no, taddress, t.tree_no");
+    order by ( case when a.package is null or a.package = '' then 1 else 0 end ), a.package, i.location_no, taddress, t.tree_no");
 
     myQuery.addParam(name="planting_start", value=planting_start, cfsqltype="CF_SQL_DATE");
     myQuery.addParam(name="planting_end", value=planting_end, cfsqltype="CF_SQL_DATE");
@@ -90,6 +89,8 @@
 
     old_loc = 0;
     siteTotal = 0;
+    pending = 0;
+    planted = 0;
     grandTotal = 0;
     line = 2;
 
@@ -106,7 +107,9 @@
             sline = line;
             line += 2;
             SpreadsheetAddRow( myXls, "PACKAGE NUMBER," & t.package, line++, 1 );
-            SpreadsheetAddRow( myXls, "SITE NUMBER," & t.location_no, line, 1 ); SpreadsheetFormatCell( myXls, rightAlign, line, 2);
+            SpreadsheetAddRow( myXls, "SITE NUMBER," & t.location_no, line, 1 ); SpreadsheetFormatCell( myXls, rightAlign, line, 2); line++;
+            SpreadsheetAddRow( myXls, "SITE TYPE," & t.site_type, line, 1 ); SpreadsheetFormatCell( myXls, rightAlign, line, 2); line++;
+            SpreadsheetAddRow( myXls, "COUNCIL DISTRICT," & t.Council_District, line, 1 ); SpreadsheetFormatCell( myXls, rightAlign, line, 2); 
             line++;
             SpreadsheetAddRow( myXls, "SITE ADDRESS", line, 1 ); SpreadsheetSetCellValue( myXls, t.address, line, 2); SpreadsheetMergeCells( myXls, line,line,2,4); line++;
             SpreadsheetAddRow( myXls, "TREE PLANTING CONTRACTOR," & t.tree_planting_contractor, line++, 1 );
@@ -127,6 +130,10 @@
 
         line++;
         
+        if ( len(t.Tree_Planting_Date) > 0 )
+            planted++;
+        else 
+            pending++;
         siteTotal++;
         grandTotal++;
     }
@@ -135,8 +142,10 @@
     SpreadsheetFormatCellRange( myXls, totalFmt, line,1, line,2);
     line += 2;
 
+    SpreadsheetAddRow( myXls, "ASSIGNED AND PENDING PLANTING," & pending, line++, 1); // do this for cross checking
+    SpreadsheetAddRow( myXls, "ASSIGNED AND PLANTED," & planted, line++, 1);
     SpreadsheetAddRow( myXls, "GRAND TOTAL REPLANTS," & grandTotal, line, 1);
-    SpreadsheetFormatCellRange( myXls, totalFmt, line,1,line,2);
+    SpreadsheetFormatCellRange( myXls, totalFmt, line-2,1,line,2);
 
     shet = myXls.getWorkBook().getSheetAt( javacast("int",0));
     for( i=0; i< 7; i++)
@@ -147,5 +156,5 @@
 
 </cfscript>
 
-<cfheader name="Content-Disposition" value="attachment; filename=tree_tracking.xls" />
+<cfheader name="Content-Disposition" value="attachment; filename=tree_readytoplant.xls" />
 <cfcontent type="application/vnd.ms-excel" file="#myFile#" deletefile="yes" />

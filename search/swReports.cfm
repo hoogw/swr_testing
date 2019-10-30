@@ -817,6 +817,25 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
         
         
          </cfif>  
+		 
+		 
+		 <cfif ((len(session.user_report) eq 0) OR (FindNoCase(",115,", session.user_report) gt 0))>
+        
+
+		<tr>
+			<td colspan="4" style="padding:0px 0px 0px 0px;">
+				<table cellpadding="0" cellspacing="0" border="0">
+					<tr>
+					<th class="center middle" style="height:30px;width:344px;">
+					<a href="../reports/treetracking_excel.cfm" target="_blank" style="color:#request.color#">Tree Report Excel File</a>
+					</th>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		
+		</cfif>
+		 
          
          <!--- joe hu 7/31/18 report access --->
 	    <cfif ((len(session.user_report) eq 0) OR (FindNoCase(",120,", session.user_report) gt 0))>
@@ -833,6 +852,8 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 			</td>
 		</tr> --->
 		
+		
+		
 		<tr>	
 			<td colspan="4" style="padding:0px 0px 0px 0px;">
 				<table cellpadding="0" cellspacing="0" border="0">
@@ -841,15 +862,16 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 					<table cellpadding="0" cellspacing="0" border="0" align="center">
 						<tr><td style="height:3px;"></td></tr>
 						<tr>
-						<td><a id="trpcup" href="../reports/treeplanted_excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">Tree Planted Excel File</a></td>
+						<td><a id="trmtx" href="../reports/TreeMetrics_Excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">City Plants Metrics Excel File
+</a></td>
 						</tr>
 						<tr><td style="height:8px;"></td></tr>
 						<tr>
 						<td >
 						&nbsp;&nbsp;&nbsp;&nbsp;From:&nbsp;
-						<input type="Text" name="rpt_trpfrm" id="rpt_tpeffrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL120();">
+						<input type="Text" name="rpt_tmtxfrm" id="rpt_tmtxfrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL10();">
 						&nbsp;&nbsp;&nbsp;&nbsp;To:&nbsp;
-						<input type="Text" name="rpt_trpto" id="rpt_tpefto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL120();">
+						<input type="Text" name="rpt_tmtxto" id="rpt_tmtxto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL10();">
 						</td>
 						</tr>
 					</table>
@@ -858,7 +880,6 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 				</table>
 			</td>
 		</tr>
-		
 		
         
         
@@ -888,15 +909,16 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 					<table cellpadding="0" cellspacing="0" border="0" align="center">
 						<tr><td style="height:3px;"></td></tr>
 						<tr>
-						<td><a id="trpcup" href="../reports/treetracking_excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">Tree Report Excel File</a></td>
+						<td><a id="trpcup" href="../reports/TreeReadyToPlant_Excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">Trees Ready To Plant Excel File
+</a></td>
 						</tr>
 						<tr><td style="height:8px;"></td></tr>
 						<tr>
 						<td >
 						&nbsp;&nbsp;&nbsp;&nbsp;From:&nbsp;
-						<input type="Text" name="rpt_trpfrm" id="rpt_treffrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL130();">
+						<input type="Text" name="rpt_trpfrm" id="rpt_trpfrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL130();">
 						&nbsp;&nbsp;&nbsp;&nbsp;To:&nbsp;
-						<input type="Text" name="rpt_trpto" id="rpt_trefto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL130();">
+						<input type="Text" name="rpt_trpto" id="rpt_trpto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL130();">
 						</td>
 						</tr>
 					</table>
@@ -912,8 +934,7 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
          <!--- joe hu 7/31/18 report access --->
 	    <cfif ((len(session.user_report) eq 0) OR (FindNoCase(",140,", session.user_report) gt 0))>
         
-        
-		<tr>	
+        <tr>	
 			<td colspan="4" style="padding:0px 0px 0px 0px;">
 				<table cellpadding="0" cellspacing="0" border="0">
 					<tr>
@@ -921,16 +942,15 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 					<table cellpadding="0" cellspacing="0" border="0" align="center">
 						<tr><td style="height:3px;"></td></tr>
 						<tr>
-						<td><a id="trpcup" href="../reports/TreeMetrics_Excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">City Plants Metrics Excel File
-</a></td>
+						<td><a id="tpef" href="../reports/treeplanted_excel.cfm?planting_start=2015-07-01&planting_end=#dateFormat(Now(),"yyyy-mm-dd")#" target="_blank" style="color:#request.color#;">Trees Planted Excel File</a></td>
 						</tr>
 						<tr><td style="height:8px;"></td></tr>
 						<tr>
 						<td >
 						&nbsp;&nbsp;&nbsp;&nbsp;From:&nbsp;
-						<input type="Text" name="rpt_trpfrm" id="rpt_trpfrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL10();">
+						<input type="Text" name="rpt_tpeffrm" id="rpt_tpeffrm" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL120();">
 						&nbsp;&nbsp;&nbsp;&nbsp;To:&nbsp;
-						<input type="Text" name="rpt_trpto" id="rpt_trpto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL10();">
+						<input type="Text" name="rpt_tpefto" id="rpt_tpefto" value="" style="width:67px;height:20px;padding:0px;text-align:center;" class="roundedsmall" onChange="setURL120();">
 						</td>
 						</tr>
 					</table>
@@ -939,6 +959,7 @@ SELECT vwHDRContractorPricing.location_no as loc FROM vwHDRContractorPricing ORD
 				</table>
 			</td>
 		</tr>
+		
  
 
         
@@ -1209,16 +1230,16 @@ function setURL10() {
 	
 	var frm = ""; var too = "";
 	var sfx = "";
-	if ($.trim($("#rpt_trpfrm").val()) != "") {
-		var arr = $("#rpt_trpfrm").val().split("/");
+	if ($.trim($("#rpt_tmtxfrm").val()) != "") {
+		var arr = $("#rpt_tmtxfrm").val().split("/");
 		frm = arr[2] + "-" + arr[0] + "-" + arr[1];
 		sfx = sfx + "planting_start=" + frm;
 	}
 	else {
 		sfx = sfx + "planting_start=" + "2015-07-01";
 	}
-	if ($.trim($("#rpt_trpto").val()) != "") {
-		var arr = $("#rpt_trpto").val().split("/");
+	if ($.trim($("#rpt_tmtxto").val()) != "") {
+		var arr = $("#rpt_tmtxto").val().split("/");
 		too = arr[2] + "-" + arr[0] + "-" + arr[1];
 		if (sfx != "") { sfx = sfx + "&"; }
 		sfx = sfx + "planting_end=" + too;
@@ -1229,7 +1250,7 @@ function setURL10() {
 	}
 	
 	if (sfx != "") { sfx = "?" + sfx; }
-	$("#trpcup").attr("href",'../reports/TreeMetrics_Excel.cfm' + sfx);
+	$("#trmtx").attr("href",'../reports/TreeMetrics_Excel.cfm' + sfx);
 }
 
 function setURL11() {
@@ -1310,7 +1331,7 @@ function setURL120() {
 	}
 	
 	if (sfx != "") { sfx = "?" + sfx; }
-	$("#trpcup").attr("href",'../reports/treeplanted_excel.cfm' + sfx);
+	$("#tpef").attr("href",'../reports/treeplanted_excel.cfm' + sfx);
 }
 
 
@@ -1318,16 +1339,16 @@ function setURL130() {
 	
 	var frm = ""; var too = "";
 	var sfx = "";
-	if ($.trim($("#rpt_treffrm").val()) != "") {
-		var arr = $("#rpt_treffrm").val().split("/");
+	if ($.trim($("#rpt_trpfrm").val()) != "") {
+		var arr = $("#rpt_trpfrm").val().split("/");
 		frm = arr[2] + "-" + arr[0] + "-" + arr[1];
 		sfx = sfx + "planting_start=" + frm;
 	}
 	else {
 		sfx = sfx + "planting_start=" + "2015-07-01";
 	}
-	if ($.trim($("#rpt_trefto").val()) != "") {
-		var arr = $("#rpt_trefto").val().split("/");
+	if ($.trim($("#rpt_trpto").val()) != "") {
+		var arr = $("#rpt_trpto").val().split("/");
 		too = arr[2] + "-" + arr[0] + "-" + arr[1];
 		if (sfx != "") { sfx = sfx + "&"; }
 		sfx = sfx + "planting_end=" + too;
@@ -1338,7 +1359,7 @@ function setURL130() {
 	}
 	
 	if (sfx != "") { sfx = "?" + sfx; }
-	$("#trpcup").attr("href",'../reports/treetracking_excel.cfm' + sfx);
+	$("#trpcup").attr("href",'../reports/TreeReadyToPlant_Excel.cfm' + sfx);
 }
 
 
@@ -1413,6 +1434,8 @@ $( "#rpt_tpeffrm" ).datepicker();
 $( "#rpt_tpefto" ).datepicker();
 $( "#rpt_treffrm" ).datepicker();
 $( "#rpt_trefto" ).datepicker();
+$( "#rpt_tmtxfrm" ).datepicker();
+$( "#rpt_tmtxto" ).datepicker();
 
 </script>
 

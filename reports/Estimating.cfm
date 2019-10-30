@@ -38,7 +38,7 @@
 		Field: CONTINGENCY_PERCENT   DataType: Float
 		Field: ENGINEERS_ESTIMATE_TOTAL_COST  DataType: Big Decimal
 		Field: rowid                 DataType: Long
---->
+---
 
 <cfquery name="MyQuery" datasource="sidewalk">
 	SELECT    vwHDRAssessmentTracking.Location_No, vwHDRAssessmentTracking.Address, vwHDRAssessmentTracking.Type, vwHDRAssessmentTracking.Priority_No, vwHDRWorkOrders.Package, vwHDRAssessmentTracking.Package_No, vwHDRAssessmentTracking.Package_Group, vwUgly.BID_UNIT, vwUgly.UOM, vwUgly.QUANTITY, vwUgly.U_PRICE, vwUgly.DISPLAY_ORDER, vwHDRWorkOrders.Work_Order, vwHDRAssessmentTracking.Name, vwHDREngineeringEstimate.Creation_Date, vwHDREngineeringEstimate.CONTINGENCY, vwHDREngineeringEstimate.CONTINGENCY_PERCENT, vwHDREngineeringEstimate.ENGINEERS_ESTIMATE_TOTAL_COST,
@@ -52,6 +52,25 @@
 	  AND vwUgly.QUANTITY > 0
 	  AND     (vwHDRWorkOrders.Package = '#URL.my_package#')
 	ORDER BY vwHDRAssessmentTracking.Package_Group, vwHDRAssessmentTracking.Package_No, vwHDRAssessmentTracking.Location_No, vwUgly.DISPLAY_ORDER
+</cfquery>
+--->
+
+<cfquery name="MyQuery" datasource="sidewalk">
+	SELECT    vwHDRAssessmentTracking.Location_No, vwHDRAssessmentTracking.Address, vwHDRAssessmentTracking.Type, vwHDRAssessmentTracking.Priority_No, vwHDRWorkOrders.Package, vwHDRAssessmentTracking.Package_No, vwHDRAssessmentTracking.Package_Group, vwUgly.BID_UNIT, vwUgly.UOM, vwUgly.QUANTITY, vwUgly.U_PRICE, vwUgly.DISPLAY_ORDER, vwHDRWorkOrders.Work_Order, vwHDRAssessmentTracking.Name, vwHDREngineeringEstimate.Creation_Date, vwHDREngineeringEstimate.CONTINGENCY, vwHDREngineeringEstimate.CONTINGENCY_PERCENT, vwHDREngineeringEstimate.ENGINEERS_ESTIMATE_TOTAL_COST,
+	
+	ReportLabel.Sort_Order as 'rowid'
+	
+	FROM      dbo.vwHDRWorkOrders
+	
+	inner join dbo.vwHDRAssessmentTracking on dbo.vwHDRWorkOrders.Package = dbo.vwHDRAssessmentTracking.Package
+	inner join dbo.vwUgly on dbo.vwHDRAssessmentTracking.Location_No = dbo.vwUgly.Location_No
+	inner join dbo.vwHDREngineeringEstimate on dbo.vwHDRAssessmentTracking.Location_No = dbo.vwHDREngineeringEstimate.Location_No
+	left join ReportLabel on dbo.vwUgly.DISPLAY_ORDER = ReportLabel.hdrk
+	WHERE 
+	vwUgly.QUANTITY > 0
+	AND     (vwHDRWorkOrders.Package = '#URL.my_package#')
+	ORDER BY vwHDRAssessmentTracking.Package_Group, vwHDRAssessmentTracking.Package_No, vwHDRAssessmentTracking.Location_No
+		, ( case when ReportLabel.Sort_Order is null then 1 else 0 end ), ReportLabel.Sort_Order, dbo.vwUgly.BID_UNIT
 </cfquery>
 
 <cfheader name="Content-Disposition" value="inline; filename=EE.pdf" >

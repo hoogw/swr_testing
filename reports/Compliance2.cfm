@@ -24,23 +24,26 @@
 
     myQuery = new Query( datasource = "sidewalk" );
     myQuery.setSql( "select
-    [Type] ctype, 
-    Subtype,	
-	Location_No 'Location No',
-	facility_name 'Name',
-	facility_address 'FAddress',
-	Zip_Code 'ZIP',
-	Council_District 'Council District',
-    Address,
-	apn 'APN',
-    pind 'PIND',
-	case [Warranty_Code] when 'Has Warranty' then 'YES' else 'NO' end as 'Warranty',
-	Issuance_Dt 'Issurance Date',
-	code 'Code',
-	Warranty_Start_Dt 'Warranty Start',
-	Warranty_End_Dt 'Warranty End',
-	Construction_Start_Date 'Construction Start',
-	Construction_Completed_Date 'Construction Complete' from vwHDRCertificates" );
+        c.[Type] ctype, 
+        Subtype,	
+        c.Location_No 'Location No',
+        facility_name 'Name',
+        facility_address 'FAddress',
+        c.Zip_Code 'ZIP',
+        c.Council_District 'Council District',
+        c.Address,
+        apn 'APN',
+        pind 'PIND',
+        case [Warranty_Code] when 'Has Warranty' then 'YES' else 'NO' end as 'Warranty',
+        Issuance_Dt 'Issurance Date',
+        code 'Code',
+        Warranty_Start_Dt 'Warranty Start',
+        Warranty_End_Dt 'Warranty End',
+        c.Construction_Start_Date 'Construction Start',
+        c.Construction_Completed_Date 'Construction Complete', 
+        ac.Total_Concrete
+        from vwHDRCertificates c
+        left join vwHDRAssessmentTracking ac on c.Location_No = ac.Location_No" );
     resp = myQuery.execute();
     rest = resp.getResult();
 
@@ -80,6 +83,13 @@
 
     myTypesQuery.setSql("with cat ( ctype, m, c ) as (
 
+    SELECT type, '0-2018', count(*) c
+    FROM vwHDRCertificates 
+    where Issuance_Dt between '2017-7-1' and '2018-6-30'
+    GROUP BY type
+
+        union
+
     SELECT type, '0-2017', count(*) c
     FROM vwHDRCertificates 
     where Issuance_Dt between '2016-7-1' and '2017-6-30'
@@ -87,34 +97,45 @@
 
         union
 
+    SELECT type, '0-2019', count(*) c
+    FROM vwHDRCertificates 
+    where Issuance_Dt between '2018-7-1' and '2019-6-30'
+    GROUP BY type
+
+        union
+
     SELECT type, cast(Datepart(MONTH, Issuance_Dt) as varchar(2)) + '-' + cast(DATEPART(year, Issuance_dt) as varchar(4)) m, count(*) c
     FROM vwHDRCertificates 
-    where Issuance_Dt between '2017-7-1' and '2018-6-30'
+    where Issuance_Dt between '2019-7-1' and '2020-6-30'
     GROUP BY type, cast(Datepart(MONTH, Issuance_Dt) as varchar(2)) + '-' + cast(DATEPART(year, Issuance_dt) as varchar(4))
     ),
-    tx ( ctype, fy2016, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, [dec] ) as (
+    tx ( ctype, fy2016, fy2017, fy2018, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, [dec] ) as (
     select ctype, 
         coalesce([0-2017], 0) ,
-        coalesce([1-2018], 0) ,
-        coalesce([2-2018], 0) ,
-        coalesce([3-2018], 0) , 
-        coalesce([4-2018], 0) , 
-        coalesce([5-2018], 0) ,
-        coalesce([6-2018], 0) ,	
-        coalesce([7-2017], 0) ,
-        coalesce([8-2017], 0) , 
-        coalesce([9-2017], 0) , 
-        coalesce([10-2017], 0) ,
-        coalesce([11-2017], 0) ,
-        coalesce([12-2017], 0)
+        coalesce([0-2018], 0) ,
+        coalesce([0-2019], 0) ,
+        coalesce([1-2020], 0) ,
+        coalesce([2-2020], 0) ,
+        coalesce([3-2020], 0) , 
+        coalesce([4-2020], 0) , 
+        coalesce([5-2020], 0) ,
+        coalesce([6-2020], 0) ,	
+        coalesce([7-2019], 0) ,
+        coalesce([8-2019], 0) , 
+        coalesce([9-2019], 0) , 
+        coalesce([10-2019], 0) ,
+        coalesce([11-2019], 0) ,
+        coalesce([12-2019], 0)
     from cat
     pivot
     (
     sum( c ) 
-    for m in ( [0-2017], [1-2018], [2-2018], [3-2018], [4-2018], [5-2018], [6-2018], [7-2017], [8-2017], [9-2017], [10-2017], [11-2017], [12-2017] )
+    for m in ( [0-2017], [0-2018], [0-2019], [1-2020], [2-2020], [3-2020], [4-2020], [5-2020], [6-2020], [7-2019], [8-2019], [9-2019], [10-2019], [11-2019], [12-2019] )
     ) as pp)
     select ctype
         , fy2016 'FY2016-2017'
+        , fy2017 'FY2017-2018'
+		, fy2018 'FY2018-2019'
         , jul July
         , aug August
         , sep September
@@ -127,7 +148,7 @@
         , apr April
         , may May
         , jun June
-        , jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + [dec] + fy2016 as total
+        , jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + [dec] + fy2016 + fy2017 + fy2018 as total
     from tx");
     
     // myTypesQuery.setSql("select ctype, count(*) c from src group by ctype" );
@@ -142,37 +163,46 @@
     myDate = DateFormat( Now(), "ddd, mmmm dd, yyyy" );
     SpreadsheetSetCellValue( myXls, myDate, 3,1 );
     SpreadsheetAddRow( myXls, "Certified Compliant Parcels", 4, 2 );
-    SpreadsheetMergeCells( myXls, 4,4, 2,15);
-    SpreadsheetAddRow( myXls, "Type, FY 16-17, FY 2017-2018", 5,1 );
+    SpreadsheetMergeCells( myXls, 4,4, 2,17);
+    SpreadsheetAddRow( myXls, "Type, FY 16-17, FY 17-18, FY 18-19, FY 2019-2020", 5,1 );
     SpreadsheetMergeCells( myXls, 5,6, 1,1);
     SpreadsheetMergeCells( myXls, 5,6, 2,2);
-    SpreadsheetMergeCells( myXls, 5,5, 3,15);
-    SpreadsheetAddRow( myXls, "July, August, September, October, November, December, January, February, March, April, May, June, Total", 6,3 );    
+    SpreadsheetMergeCells( myXls, 5,6, 3,3);
+    SpreadsheetMergeCells( myXls, 5,6, 4,4);
+    SpreadsheetMergeCells( myXls, 5,5, 5,17);
+    SpreadsheetAddRow( myXls, "July, August, September, October, November, December, January, February, March, April, May, June, Total", 6,5 );    
     SpreadsheetAddRows( myXls, myTypes);
-    SpreadsheetSetCellFormula( myXls, "sum(b7:b#nTypes#)", #nTypes#+1,2 );
+    for( j=2; j LTE 17; j = j+1) {
+        col = Chr(96 + j);
+        SpreadsheetSetCellFormula( myXls, "sum(#col#7:#col##nTypes#)", #nTypes#+1,j );
+    }
+    // SpreadsheetSetCellFormula( myXls, "sum(b7:b#nTypes#)", #nTypes#+1,2 );
 
-    for( j=6; j LTE #nTypes#+2; j=j+1) {
-        SpreadsheetFormatCell( myXls, { leftborder = "medium" }, j, 15);
+    for( j=6; j LTE #nTypes#+1; j=j+1) {
+        SpreadsheetFormatCell( myXls, { leftborder = "medium" }, j, 17);
     }   
     for( j=4; j LTE #nTypes#+1; j=j+1) {
-        SpreadsheetFormatCell( myXls, { leftborder = "medium" }, j, 16);
+        SpreadsheetFormatCell( myXls, { leftborder = "medium" }, j, 18 );
     }
     
     for( rx in [ 4, 7, #nTypes#+1, #nTypes#+2]) {
-        for( i=1; i LTE 15; i = i+1) {
+        for( i=1; i LTE 17; i = i+1) {
             SpreadsheetFormatCell( myXls, { topborder = "medium" }, rx, i);
         }
     }
-    for( i=3; i LTE 15; i = i+1) {
+    for( i=3; i LTE 17; i = i+1) {
         SpreadsheetFormatCell( myXls, { topborder = "medium", bottomborder = "medium" }, 5, i);
     }
     SpreadsheetFormatCell( myXls, { alignment="center", topborder = "medium", leftborder="medium", bottomborder="medium" }, 4,2 );
-    SpreadsheetFormatCell( myXls, { alignment="center", rightborder = "medium" }, 5,1 );
-    SpreadsheetFormatCell( myXls, { alignment="center", textwrap="true", verticalalignment="true", rightborder = "medium" }, 5,2 );
+    SpreadsheetFormatCell( myXls, { alignment="center", verticalalignment="center", rightborder = "medium" }, 5,1 );
+    SpreadsheetFormatCell( myXls, { alignment="center", textwrap="true", verticalalignment="true", rightborder = "medium", topborder="medium" }, 5,2 );
+    SpreadsheetFormatCell( myXls, { alignment="center", textwrap="true", verticalalignment="true", rightborder = "medium", topborder="medium" }, 5,3 );
+    SpreadsheetFormatCell( myXls, { alignment="center", textwrap="true", verticalalignment="true", rightborder = "medium", topborder="medium" }, 5,4 );
     SpreadsheetFormatCell( myXls, { alignment="center", leftborder = "medium", rightborder = "medium" }, 6,2 );
-    SpreadsheetFormatCell( myXls, { alignment="center", topborder = "medium", bottomborder = "medium" }, 5,3 );
-    SpreadsheetFormatCell( myXls, { leftborder = "medium", topborder = "medium" }, 7, 15);
-    SpreadsheetFormatCell( myXls, { leftborder = "medium", topborder = "medium" }, #nTypes#+1, 15);
+    SpreadsheetFormatCell( myXls, { alignment="center", leftborder = "medium", rightborder = "medium" }, 6,3 );
+    SpreadsheetFormatCell( myXls, { alignment="center", leftborder = "medium", rightborder = "medium" }, 6,4 );
+    SpreadsheetFormatCell( myXls, { leftborder = "medium", topborder = "medium" }, 7, 17);
+    SpreadsheetFormatCell( myXls, { leftborder = "medium", topborder = "medium" }, #nTypes#+1, 17);
 
     for( myT in myTypes ) {
         mySelection = new Query( dbtype="query" );
@@ -183,9 +213,32 @@
 
         SpreadsheetCreateSheet( myXls, myT[ "ctype" ]);
         SpreadsheetSetActiveSheet( myXls, myT[ "ctype" ]);
-        SpreadsheetAddRow( myXls, "Type, Sub Type, Site No, Facility Name, Facility Address, ZIP, Council District, Address, APN, PIN, Warranty, Issuance Date, Code, Warranty Start, Warranty End, Construction Start, Construction Complete", 1,1 );
+        SpreadsheetAddRow( myXls, "Type, Sub Type, Site No, Facility Name, Facility Address, ZIP, Council District, Address, APN, PIN, Warranty, Issuance Date, Code, Warranty Start, Warranty End, Construction Start, Construction Complete, Total Concrete", 1,1 );
         SpreadsheetAddRows( myXls, book );
+    
+        siteNum = -1;
+        startR = -1;
+        endR = 1;
+        for( nC in book)
+        {
+            if ( siteNum != nC["Location No"]) {
+                if ( startR > 0) {
+                    SpreadsheetMergeCells( myXls, startR, endR, 18,18);
+                    /*SpreadsheetMergeCells( myXls, startR, endR, 4,4);
+                    SpreadsheetMergeCells( myXls, startR, endR, 5,5);
+                    SpreadsheetMergeCells( myXls, startR, endR, 6,6);*/
+                }
+                startR = ++endR; 
+                siteNum = nC["Location No"];
+            } else {
+                ++endR;
+            }
+        }
+
+        if ( startR > 0 && endR > 1)
+            SpreadsheetMergeCells( myXls, startR, endR, 18,18);
     }
+
 
     // column width to auto
     pageNum = 1;

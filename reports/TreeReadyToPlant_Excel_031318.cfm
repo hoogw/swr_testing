@@ -1,13 +1,30 @@
+<cfoutput>
+<cfif isdefined("session.userid") is false>
+	<script>
+	top.location.reload();
+	//var rand = Math.random();
+	//url = "toc.cfm?r=" + rand;
+	//window.parent.document.getElementById('FORM2').src = url;
+	//self.location.replace("../login.cfm?relog=exe&r=#Rand()#&s=6");
+	</script>
+	<cfabort>
+</cfif>
+<cfif session.user_level lt 0>
+	<script>
+	self.location.replace("../login.cfm?relog=false&r=#Rand()#&s=6&chk=authority");
+	</script>
+	<cfabort>
+</cfif>
+</cfoutput>
+
 <!--- anticipate to be different from TreeTracking_Excel. so cannot share the same file --->
 <!--- new layout 2018.2.22 --->
 
 <!--- tree site info.ready_to_plant is true --->
-<cfparam name="planting_start" type="date" default="2000-1-1" />
-<cfparam name="planting_end" type="date" default="2100-1-1" />
 
 <cfscript>
 
-    outdir = "D:/sidewalk_repair/coc/";
+    outdir = "D:/sidewalk_repair/downloads/";
 
     myFile = outdir & "ttt.xls";
 
@@ -17,13 +34,8 @@
     inner join vwHDRTreeList t on i.location_no = t.location_no
     inner join vwHDRAssessmentTracking a on i.location_no = a.location_no
     where t.action_type = 'planting' and i.ready_to_plant = 1
-    and a.package <> ''
-    and t.[type] in ( 'BSS', 'RAP', 'General Service' ) 
-    and i.[pre_inspection_date] BETWEEN :planting_start AND :planting_end
-    order by a.package, i.location_no, taddress, t.tree_no");
+    order by a.package, i.location_no, t.tree_no");
 
-    myQuery.addParam(name="planting_start", value=planting_start, cfsqltype="CF_SQL_DATE");
-    myQuery.addParam(name="planting_end", value=planting_end, cfsqltype="CF_SQL_DATE");
     trees = myQuery.execute().getResult();
 
     headerFmt = StructNew();
@@ -101,7 +113,7 @@
 
         overhead = t.overhead_wires == 1 ? "Yes" : "No";
         SpreadsheetAddRow( myXls, t.species & "," & t.parkway_treewell_size & "," & overhead & "," & t.sub_position & "," & t.offsite & "," & t.Tree_Planting_Date, line, 2);
-        SpreadsheetSetCellValue( myXls, t.taddress, line, 1);
+        SpreadsheetSetCellValue( myXls, t.address, line, 1);
         SpreadsheetFormatCellRange( myXls, treeFmt, line, 1, line, 6);
         SpreadsheetFormatCell( myXls, treeDFmt, line, 7);
 

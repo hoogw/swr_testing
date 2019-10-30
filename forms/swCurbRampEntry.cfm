@@ -29,6 +29,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
 
+
+
+
+
+<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+
+
+
+
+
+
+
 <cfoutput>
 <script language="JavaScript1.2" src="../js/fw_menu.js"></script>
 <script language="JavaScript" src="../js/isDate.js" type="text/javascript"></script>
@@ -207,7 +219,7 @@ SELECT * FROM tblYesNo ORDER BY value
 						<th class="left middle" style="width:100px;">Priority No:</th>
 						<td style="width:2px;"></td>
 						<td class="frm" style="width:60px;">
-						<input type="Text" name="cr_priority" id="cr_priority" value="1" style="width:55px;text-align:center;" class="rounded"></td>
+						<input type="Text" name="cr_priority" id="cr_priority" value="" style="width:55px;text-align:center;" class="rounded"></td>
 						<td style="width:2px;"></td>
 						<th class="left middle" style="width:89px;">Date Logged:</th>
 						<td style="width:2px;"></td>
@@ -554,6 +566,14 @@ function submitForm() {
 	var errors = '';var cnt = 0;
 	if (trim($('#cr_primary').val()) == '')	{ cnt++; errors = errors + "- Primary Street is required!<br>"; }
 	if (trim($('#cr_type').val()) == '')	{ cnt++; errors = errors + "- Type is required!<br>"; }
+	
+	if (trim($('#cr_sno').val()) == '')	{ cnt++; errors = errors + "- Associated Site is required!<br>"; }
+	if (trim($('#cr_cd').val()) == '')	{ cnt++; errors = errors + "- Council District is required!<br>"; }
+	if (trim($('#cr_zip').val()) == '')	{ cnt++; errors = errors + "- Zip Code is required!<br>"; }
+	if (trim($('#cr_corner').val()) == '')	{ cnt++; errors = errors + "- Intersection Corner is required!<br>"; }
+	
+	
+	
 	
 	var chk = $.isNumeric(trim($('#cr_priority').val().replace(/,/g,""))); var chk2 = trim($('#cr_priority').val());
 	if (chk2 != '' && chk == false)	{ cnt++; errors = errors + "- Priority No. must be numeric!<br>"; }

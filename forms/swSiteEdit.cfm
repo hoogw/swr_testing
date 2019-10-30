@@ -3033,19 +3033,6 @@ SELECT DISTINCT common FROM dbo.ags_bss_tree_inventory WHERE common is not null 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 <cfquery name="getContractorType" datasource="#request.sqlconn#" dbtype="ODBC">
 SELECT * FROM tblContractorType ORDER BY id
 </cfquery>
@@ -3491,6 +3478,10 @@ SELECT * FROM tblContractorType ORDER BY id
 					<td style="width:2px;"></td>
 					<th class="center middle" style="width:75px;"><span style="font-size:10px;">Permit Issuance<br>Date:</span></th>
 					<td style="width:2px;"></td>
+                    
+                    
+                    
+                    
 					<th class="center middle" style="width:70px;"><span style="font-size:10px;">Tree Removal<br>Date:</span></th>
 					<td style="width:2px;"></td>
 					<th class="left middle" style="width:200px;">Address:</th>
@@ -3846,15 +3837,24 @@ SELECT * FROM tblContractorType ORDER BY id
                     <td style="width:2px;"></td>
 					<th class="center middle" style="width:65px;"><span style="font-size:10px;">Permit<br>Issuance<br>Date:</span></th>
 					<td style="width:2px;"></td>
+                    
+                    
+                    
+                    <th class="center middle" style="width:65px;"><span style="font-size:10px;">Assigned<br>Date:</span></th>
+					<td style="width:2px;"></td>
+                    
+                    
+                    
+                    
 					<th class="center middle" style="width:65px;"><span style="font-size:10px;">Tree<br>Planting<br>Date:</span></th>
 					<td style="width:2px;"></td>
 					<th class="center middle" style="width:65px;"><span style="font-size:10px;">Start<br>Watering<br>Date:</span></th>
 					<td style="width:2px;"></td>
 					<th class="center middle" style="width:65px;"><span style="font-size:10px;">End<br>Watering<br>Date:</span></th>
 					<td style="width:2px;"></td>
-					<th class="left middle" style="width:120px;"><span style="font-size:10px;">Address:</span></th>
+					<th class="left middle" style="width:90px;"><span style="font-size:10px;">Address:</span></th>
 					<td style="width:2px;"></td>
-					<th class="left middle" style="width:92px;"><span style="font-size:10px;">Species:</span></th>		
+					<th class="left middle" style="width:62px;"><span style="font-size:10px;">Species:</span></th>		
 					<td style="width:2px;"></td>
 					<th class="center middle" style="width:53px;"><span style="font-size:10px;">Parkway or<br>Tree Well<br>Size:</span></th>
 					<td style="width:2px;"></td>
@@ -3930,11 +3930,11 @@ SELECT * FROM tblContractorType ORDER BY id
 					<cfquery name="getList" dbtype="query">
 					SELECT * FROM getTreeListInfo WHERE action_type = 1 AND group_no = #scnt# AND tree_no = #trcnt#
 					</cfquery>
-					<td class="frm left middle" style="width:28px;height:26px;">
+					<td class="frm left middle" style="width:22px;height:26px;">
 					<cfset v = 24><cfif trim(getList.tree_box_size) is not "">
 					<cfset v = trim(getList.tree_box_size)></cfif>
 					<input type="Text" name="tpcnt_#scnt#_#trcnt#" id="tpcnt_#scnt#_#trcnt#" value="#trcnt#" 
-					style="width:26px;height:20px;padding:0px;" class="center roundedsmall" disabled></td>
+					style="width:20px;height:20px;padding:0px;" class="center roundedsmall" disabled></td>
 					<td style="width:2px;"></td>
 					<td class="frm left middle" style="width:44px;">
 					<select name="tpdia_#scnt#_#trcnt#" id="tpdia_#scnt#_#trcnt#" class="roundedsmall" style="width:45px;height:20px;font-size:9px;" onChange="calcTrees();" #trdis#>
@@ -3948,22 +3948,39 @@ SELECT * FROM tblContractorType ORDER BY id
 					<cfset v = ""><cfif trim(getList.permit_issuance_date) is not "">
 					<cfset v = dateformat(trim(getList.permit_issuance_date),"mm/dd/yyyy")></cfif>
 					<td class="frm left middle" style="width:58px;"><input type="Text" name="tppidt_#scnt#_#trcnt#" id="tppidt_#scnt#_#trcnt#" value="#v#" 
+					style="width:56px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!--- ---------- joe hu  Oct 2019 add assigned date --------------------  --->
+                    <td style="width:2px;"></td>
+                    <cfset v = ""><cfif trim(getList.Assigned_Date) is not "">
+					<cfset v = dateformat(trim(getList.Assigned_Date),"mm/dd/yyyy")></cfif>
+					<td class="frm left middle" style="width:58px;"><input type="Text" name="tpadt_#scnt#_#trcnt#" id="tpadt_#scnt#_#trcnt#" value="#v#" 
 					style="width:57px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
+                    
+                    <!--- ----- end ----- joe hu  Oct 2019 add assigned date --------------------  --->
+                    
+                    
+                    
 					<td style="width:2px;"></td>
 					<cfset v = ""><cfif trim(getList.tree_planting_date) is not "">
 					<cfset v = dateformat(trim(getList.tree_planting_date),"mm/dd/yyyy")></cfif>
 					<td class="frm left middle" style="width:58px;"><input type="Text" name="tptrdt_#scnt#_#trcnt#" id="tptrdt_#scnt#_#trcnt#" value="#v#" 
-					style="width:57px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
+					style="width:56px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
 					<td style="width:2px;"></td>
 					<cfset v = ""><cfif trim(getList.start_watering_date) is not "">
 					<cfset v = dateformat(trim(getList.start_watering_date),"mm/dd/yyyy")></cfif>
 					<td class="frm left middle" style="width:58px;"><input type="Text" name="tpswdt_#scnt#_#trcnt#" id="tpswdt_#scnt#_#trcnt#" value="#v#" 
-					style="width:57px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
+					style="width:56px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
 					<td style="width:2px;"></td>
 					<cfset v = ""><cfif trim(getList.end_watering_date) is not "">
 					<cfset v = dateformat(trim(getList.end_watering_date),"mm/dd/yyyy")></cfif>
 					<td class="frm left middle" style="width:58px;"><input type="Text" name="tpewdt_#scnt#_#trcnt#" id="tpewdt_#scnt#_#trcnt#" value="#v#" 
-					style="width:57px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
+					style="width:56px;height:20px;padding:0px;font-size:10px;" class="center roundedsmall" #trdis#></td>
 					<td style="width:2px;"></td>
 					<cfset v = "">
 					<cfif trim(getList.address) is not ""><cfset v = trim(getList.address)></cfif>
@@ -3971,20 +3988,20 @@ SELECT * FROM tblContractorType ORDER BY id
                     
                     
                     
-					<td class="frm left middle" style="width:106px;">
+					<td class="frm left middle" style="width:74px;">
                              <input type="Text" name="tpaddr_#scnt#_#trcnt#" id="tpaddr_#scnt#_#trcnt#" value="#v#" 
-									style="width:104px;height:20px;padding:0px 2px 0px 4px;font-size:10px;" class="roundedsmall" #trdis#>
+									style="width:72px;height:20px;padding:0px 2px 0px 4px;font-size:10px;" class="roundedsmall" #trdis#>
                     </td>
                     
                     
                     
 					<td style="width:2px;"></td>
-					<td class="frm left middle" style="width:80px;">
+					<td class="frm left middle" style="width:60px;">
                         <div class="ui-widget">
 							<cfset v = ""><cfif trim(getList.species) is not ""><cfset v = trim(getList.species)></cfif>
                             <label for="tp_species_#scnt#_#trcnt#"></label>
                             <input type="Text" name="tpspecies_#scnt#_#trcnt#" id="tpspecies_#scnt#_#trcnt#" value="#v#" 
-                            style="width:78px;height:20px;padding:0px 2px 0px 4px;font-size:9px;" class="roundedsmall" #trdis#>
+                            style="width:58px;height:20px;padding:0px 2px 0px 4px;font-size:9px;" class="roundedsmall" #trdis#>
                         </div>
 					</td>	
 
@@ -5995,7 +6012,7 @@ SELECT * FROM tblContractorType ORDER BY id
                         <!--- ---------- joe hu  Feb 2019 multiple update --------------------  --->
                         
 							<tr>
-								<th class="left middle" style="height:30px;width:90px;">Tree Removal Contractor:&nbsp;</th>
+								<th class="left middle" style="height:30px;width:90px;">Tree Removal/Prune Contractor:&nbsp;</th>
                                 
                                 
                                 
@@ -6272,7 +6289,7 @@ SELECT * FROM tblContractorType ORDER BY id
 								<td style="width:2px;"></td>
 								<cfset v = ""><cfif trim(getTreeInfo.post_inspection_by) is not "">
 								<cfset v = trim(getTreeInfo.post_inspection_by)></cfif>
-								<th class="left middle" style="height:30px;width:120px;">Post-Inspection By:&nbsp;</th>
+								<th class="left middle" style="height:30px;width:120px;">Final Post-Inspection By:&nbsp;</th>
 								<td style="width:2px;"></td>
 								<td class="frm left middle" style="width:149px;"><input type="Text" name="tree_postinspby" id="tree_postinspby" value="#v#" 
 								style="width:144px;" class="rounded"></td>
@@ -6297,7 +6314,7 @@ SELECT * FROM tblContractorType ORDER BY id
 								style="width:370px;" class="rounded" disabled></td>
 								<td></td>
 								<td style="width:2px;"></td>
-								<th class="left middle" style="height:30px;width:120px;">Post-Inspection Date:&nbsp;</th>
+								<th class="left middle" style="height:30px;width:120px;">Final Post-Inspection Date:&nbsp;</th>
 								<td style="width:2px;"></td>
 								<cfset v = ""><cfif getTreeInfo.post_inspection_date is not ""><cfset v = dateformat(getTreeInfo.post_inspection_date,"MM/DD/YYYY")></cfif>
 								<td class="frm left middle" style="width:149px;"><input type="Text" name="tree_postinspdt" id="tree_postinspdt" value="#v#" 
@@ -7144,9 +7161,13 @@ if (geoCnt == 0) {
 var url = "http://navigatela.lacity.org/geocoder/geocoder.cfm?permit_code=SRP&ref_no=" + loc + "&pin=&return_url=http%3A%2F%2Fengpermits%2Elacity%2Eorg%2Fexcavation%2Fboe%2Fgo%5Fmenu%5Fgc%2Ecfm&allow_edit=" + ro + "&p_start_ddate=05-01-2003&p_end_ddate=05-30-2003" + search;
 //console.log(url);
 
-<cfif lock neq 1>
+
+
+<!--- <cfif lock neq 1>  --->
 newWindow(url,'',900, 700,'no');
-</cfif>
+<!--- </cfif>  --->
+
+
 return false;
 }
 
@@ -9225,6 +9246,8 @@ return false;
 						
 						$( "#chr(35)#tpspecies_#i#_#j#" ).autocomplete({ source: arrSpecies });
 						$( "#chr(35)#tppidt_#i#_#j#" ).datepicker();
+						$( "#chr(35)#tpadt_#i#_#j#" ).datepicker();
+						
 						$( "#chr(35)#tptrdt_#i#_#j#" ).datepicker();
 						$( "#chr(35)#tpswdt_#i#_#j#" ).datepicker();
 						$( "#chr(35)#tpewdt_#i#_#j#" ).datepicker();

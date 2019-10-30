@@ -34,8 +34,10 @@
 --->
 
 <cfquery name="MyQuery" datasource="sidewalk">
-	SELECT    Ramp_No, Primary_Street, Secondary_Street, Intersection_Corner, Priority_No, Council_District, Design_Start_Date, Design_Finish_Date, Designed_By, QC_Date, QC_By, Construction_Completed_Date
+	SELECT    Ramp_No, Primary_Street, Secondary_Street, Intersection_Corner, Zip_Code, Priority_No, Council_District, Design_Start_Date, Design_Finish_Date, Designed_By, QC_Date, QC_By, Construction_Completed_Date
 	FROM      dbo.vwHDRCurbRamps
+	WHERE	  removed is null or removed <> 1
+	ORDER BY Council_District, Zip_Code
 </cfquery>
 
 <cfreport template="CurbRampTracking.cfr" format="pdf" query="MyQuery"/>

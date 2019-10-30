@@ -29,6 +29,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
 
+
+
+
+<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+
+
+
+
 <cfoutput>
 <script language="JavaScript1.2" src="../js/fw_menu.js"></script>
 <script language="JavaScript" src="../js/isDate.js" type="text/javascript"></script>
@@ -192,7 +200,7 @@ SELECT * FROM tblYesNo ORDER BY value
 						<th class="left middle" style="width:65px;">Priority No:</th>
 						<td style="width:2px;"></td>
 						<td class="frm" style="width:45px;">
-						<input type="Text" name="sw_priority" id="sw_priority" value="1" style="width:40px;text-align:center;" class="rounded"></td>
+						<input type="Text" name="sw_priority" id="sw_priority" value="" style="width:40px;text-align:center;" class="rounded"></td>
 						<td style="width:2px;"></td>
 						<th class="left middle" style="width:81px;">Date Logged:</th>
 						<td style="width:2px;"></td>
@@ -427,6 +435,9 @@ function submitForm() {
 	if (trim($('#sw_name').val()) == '')	{ cnt++; errors = errors + "- Facility Name is required!<br>"; }
 	if (trim($('#sw_address').val()) == '')	{ cnt++; errors = errors + "- Address is required!<br>"; }
 	if (trim($('#sw_type').val()) == '')	{ cnt++; errors = errors + "- Subtype is required!<br>"; }
+	
+	if (trim($('#sw_cd').val()) == '')	{ cnt++; errors = errors + "- Council District is required!<br>"; }
+	if (trim($('#sw_zip').val()) == '')	{ cnt++; errors = errors + "- Zip Code is required!<br>"; }
 
 	//var chk = $.isNumeric(trim($('#sw_tcon').val().replace(/,/g,""))); var chk2 = trim($('#sw_tcon').val());
 	//if (chk2 != '' && chk == false)	{ cnt++; errors = errors + "- Total Concrete must be numeric!<br>"; }

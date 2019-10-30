@@ -1,6 +1,25 @@
+<cfoutput>
+<cfif isdefined("session.userid") is false>
+	<script>
+	top.location.reload();
+	//var rand = Math.random();
+	//url = "toc.cfm?r=" + rand;
+	//window.parent.document.getElementById('FORM2').src = url;
+	//self.location.replace("../login.cfm?relog=exe&r=#Rand()#&s=6");
+	</script>
+	<cfabort>
+</cfif>
+<cfif session.user_level lt 0>
+	<script>
+	self.location.replace("../login.cfm?relog=false&r=#Rand()#&s=6&chk=authority");
+	</script>
+	<cfabort>
+</cfif>
+</cfoutput>
+
 <cfscript>
 
-    outdir = "D:/sidewalk_repair/coc/";
+    outdir = "D:/sidewalk_repair/downloads/";
 
     myFile = outdir & "ttt.xls";
 
