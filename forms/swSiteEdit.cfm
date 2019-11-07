@@ -7986,7 +7986,204 @@ function submitForm7() {
 		return false;	
 	}
 	
+	
+	
+	
+	
+	
+	
+	<!--- ------------ joe hu ------ 11/4/19  ----------  auto populate tree planting assigned date ---------------  --->
+	      
+	       
+			<!---   failed, not sure why, maybe because of i and j loop , do not ues this section  
+			
+			
+			
+			    
+			   <cfoutput>
+			      var __lngth1 =   #lngth1#
+				  var __lngth2 =   #lngth2#
+				</cfoutput>  
+					
+			 console.log('__lngth1 --- ', __lngth1)
+			 console.log('__lngth2 --- ', __lngth2)
+		
+			
+									
+									
+									
+	
+	         var __operation = true
+			 
+			 var _tree_planting_assigned_to_contractor_date = $("#tree_tpc_dt").val()
+			 
+			 if (_tree_planting_assigned_to_contractor_date)) {
+			 
+			 
+			 
+														for (i = 1; i < __lngth1; i++) {
+																							 
+																for (j = 1; j < __lngth2; j++) {	
+																
+																	   var _tree_plant_assigned_date = $("#tpadt_#i#_#j#").val()
+																	   
+																			
+																	  if (_tree_plant_assigned_date) {
+																				
+																				 __operation = false
+																				
+																				
+																			}
+																			
+																			
+																			
+																			
+																}
+																							 
+														}
+																										
+														
+														
+														
+													
+														
+														
+														
+														if (__operation) {
+														
+														
+																		 for (i = 1; i < __lngth1; i++) {
+																											 
+																				for (j = 1; j < __lngth2; j++) {	
+																				
+																					   $("#chr(35)#tpadt_#i#_#j#").val(_tree_planting_assigned_to_contractor_date)
+																					   
+																							
+																							
+																							
+																				}
+																											 
+																		}
+															   
+														
+														
+														}
+			
+	
+	
+	                                                     
+	
+	
+		 }
+	
+	
+	    --->
+	 
+	 
+	
+	<!---    end ------------ joe hu ------ 11/4/19  ----------  auto populate tree planting assigned date ---------------  --->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	var frm = $('#form7').serializeArray();
+	
+	
+	 console.log('frm --->>> ', frm)
+	
+	
+	
+	
+	
+	<!--- ------------ joe hu ------ 11/4/19  ----------  auto populate tree planting assigned date ---------------  --->
+	
+	                var k, __name, __value;
+					var __operation = true
+					 var _tree_planting_assigned_to_contractor_date = $("#tree_tpc_dt").val()
+					 
+					 
+					
+	                for (k = 0; k < frm.length; k++) {
+						
+						__name = frm[k].name
+						__value = frm[k].value
+						
+						
+								if ( __name.includes("tpadt_")) {
+													 
+								      if (__value.length >0) {
+									       __operation = false
+										   break;
+									  }
+								     
+								
+								
+								
+								
+								}
+						
+						
+						
+						
+						
+				    }
+	              
+				  
+				  if (_tree_planting_assigned_to_contractor_date.length == 0){
+					  __operation = false
+				  }
+				  
+				  
+				  
+				  if (__operation) {
+					  
+	
+	                                   for (k = 0; k < frm.length; k++) {
+						
+											__name = frm[k].name
+											__value = frm[k].value
+											
+											
+													if ( __name.includes("tpadt_")) {
+																		 
+														  
+														 
+													frm[k].value = _tree_planting_assigned_to_contractor_date
+													
+													
+													
+													}
+											
+											
+											
+											
+											
+										}
+	              
+	
+	                        
+	
+	
+				  }
+	
+	<!---    end ------------ joe hu ------ 11/4/19  ----------  auto populate tree planting assigned date ---------------  --->
+	
+	
+	
+	
 	frm.push({"name" : "tree_trn", "value" : trim($('#tree_trn').val()) });
 	
 	
@@ -8124,6 +8321,10 @@ function submitForm7() {
 				frm.push({"name" : "trpsct_#i#_#j#", "value" : "off"});
 			}
 		}
+		
+		
+		
+		
 		
 		
 		
@@ -8445,6 +8646,10 @@ function addTree(typ,scnt) {
 	
 	$("#" + pfx + "dia_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
 	$("#" + pfx + "pidt_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
+	
+	<!--- ---------- joe hu  Oct 2019 add assigned date --------------------  --->
+	$("#" + pfx + "adt_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
+	
 	$("#" + pfx + "trdt_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
 	$("#" + pfx + "srdt_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
 	$("#" + pfx + "swdt_" + scnt + "_" + (cnt+1)).removeAttr('disabled');
