@@ -2518,7 +2518,7 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 				</tr>
 			</cfif>
 
-			<tr id="field_row_#no#">
+			<tr>
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;width:25px;">#no#</th>
@@ -9433,13 +9433,6 @@ return false;
      <cfoutput>
 	 
 	 
-
-
-         
-
-
-
-
  
 	 // document ready 
          // $(function() {
@@ -9447,119 +9440,8 @@ return false;
 									   
 									   
 									   
-			     console.log(" ---- doc.ready   start ------")
-
-
-
-                <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
-
-
-                          // recursive function 
-						  function show_next_row(_row_id_number, _field_name_number){
-
-
-                                        console.log('_row_id_number',_row_id_number,  ' _field_name_number',   _field_name_number)
-
-												// we need show last empty row as place holder
-												row_id = 'field_row_'+ _row_id_number;
-												row_element = document.getElementById(row_id)
-
-
-												// row_element.style.display = "inline"; // not work
-												row_element.removeAttribute("style");
-
-
-
-												//  row_element text input field  add onclick event listener......
-
-												extra_field_name_id = 'ass_EXTRA_FIELD_' + _field_name_number + '_name';
-
-												extra_field_text_input_element = document.getElementById(extra_field_name_id);
-
-
-											    extra_field_text_input_element.addEventListener(
-																								"click", 
-												
-																								function (event) {
-
-                                                                                      if (_field_name_number < _total_extra_field ){
-                                                                                        show_next_row((_row_id_number+1), (_field_name_number +1))
-																					  }
-
-
-
-																								});
-
-
-						  }
-
-
-
-
-                           //console.log('extra field operation starting.....')
-
-                       
-					        var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
-                            
-							var _existing_field = 75   
-							var _total_extra_field = 20
-							var _index = _total_extra_field + _existing_field
-
-							
-
-							for (i = 1; i <= _total_extra_field; i++) {
-          
-                                
-
-									row_id = 'field_row_'+ (_index -i);
-									row_element = document.getElementById(row_id)
-
-									extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
-
-									extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
-
-
-									console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
-
-
-
-								if (extra_field_name_text_field.length == 0){
-
-													console.log('hide extra field row id .....', row_id)
-
-													row_element.style.display = "none";
-
-
-							  	 } else {
-
-									      if ((_total_extra_field -i + 1) < _total_extra_field ){
-
-                                               // recursive call 
-                                               show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
-										  }
-
-										  break;  // break for loop, we need the last not empty field.
-
-							   }
-							    
-							}//for
-
-
-
-                 <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
-
+			     console.log(" ---- doc.ready  ------")
 				 
-
-
-
-
-
-
-
-
-
-
-
 				<cfloop index="i" from="1" to="#lngth1#">
 					<cfloop index="j" from="1" to="#lngth2#">
 						$( "#chr(35)#trspecies_#i#_#j#" ).autocomplete({ source: arrSpecies });
@@ -9692,7 +9574,7 @@ return false;
 						   
 						   
 						   
-						     console.log(" ..... doc.ready  end ..........")
+						     console.log(" doc.ready ")
 							 
 							 
 							 
