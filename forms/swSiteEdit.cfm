@@ -2518,7 +2518,13 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 				</tr>
 			</cfif>
 
+
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- </tr> --->
 			<tr id="field_row_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;width:25px;">#no#</th>
@@ -9432,26 +9438,7 @@ return false;
 
      <cfoutput>
 	 
-	 
-
-
-         
-
-
-
-
- 
-	 // document ready 
-         // $(function() {
-			$(document).ready(function() {		 
-									   
-									   
-									   
-			     console.log(" ---- doc.ready   start ------")
-
-
-
-                <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+	             <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
 
                           // recursive function 
@@ -9495,60 +9482,91 @@ return false;
 
 
 
-
-                           //console.log('extra field operation starting.....')
-
-                       
-					        var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
-                            
-							var _existing_field = 75   
-							var _total_extra_field = 20
-							var _index = _total_extra_field + _existing_field
-
-							
-
-							for (i = 1; i <= _total_extra_field; i++) {
-          
-                                
-
-									row_id = 'field_row_'+ (_index -i);
-									row_element = document.getElementById(row_id)
-
-									extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
-
-									extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
+							function extra_field_operation(){
 
 
-									console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
+										
+
+												//console.log('extra field operation starting.....')
+
+											
+													var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
+													
+													var _existing_field = 75   
+													var _total_extra_field = 50
+													var _index = _total_extra_field + _existing_field
+
+													
+
+													for (i = 1; i <= _total_extra_field; i++) {
+								
+														
+
+															row_id = 'field_row_'+ (_index -i);
+															row_element = document.getElementById(row_id)
+
+															extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
+
+															extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
+
+
+															console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
 
 
 
-								if (extra_field_name_text_field.length == 0){
+														if (extra_field_name_text_field.length == 0){
 
-													console.log('hide extra field row id .....', row_id)
+																			console.log('hide extra field row id .....', row_id)
 
-													row_element.style.display = "none";
+																			row_element.style.display = "none";
 
 
-							  	 } else {
+														} else {
 
-									      if ((_total_extra_field -i + 1) < _total_extra_field ){
+																if ((_total_extra_field -i + 1) < _total_extra_field ){
 
-                                               // recursive call 
-                                               show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
-										  }
+																	// recursive call 
+																	show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
+																}
 
-										  break;  // break for loop, we need the last not empty field.
+																break;  // break for loop, we need the last not empty field.
 
-							   }
-							    
-							}//for
+													}
+														
+													}//for
+
+							}
+								
 
 
 
                  <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
 				 
+
+
+ 
+	 // document ready 
+         // $(function() {
+			$(document).ready(function() {		 
+									   
+									   
+									   
+			     console.log(" ---- doc.ready   start ------")
+
+
+            <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+			       // comment out this line, all 50 extra field rows will show.
+				   // with this line, empty row will hide.
+                    extra_field_operation();
+            <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+				 
+              
+
+
+
 
 
 
