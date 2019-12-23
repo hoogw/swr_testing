@@ -1902,7 +1902,17 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 				</tr>
 			</cfif>
 			
-			<tr>
+			
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- <tr> --->
+
+			<!--- this is form3, engineering estimate --->
+			<tr id="field_row_engineering_estimate_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;width:25px;">#no#</th>
@@ -2520,7 +2530,9 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 
 
  <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
-            <!--- </tr> --->
+            <!--- <tr> --->
+
+			<!--- this is form5, field assessment --->
 			<tr id="field_row_#no#">
  <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
@@ -2781,7 +2793,17 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 				</tr>
 			</cfif>
 
-			<tr>
+			
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- </tr> --->
+
+			<!--- this is form6, change orders --->
+			<tr id="field_row_change_order_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;">#no#</th>
@@ -9441,11 +9463,112 @@ return false;
 	             <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
 
-                          // recursive function 
-						  function show_next_row(_row_id_number, _field_name_number){
 
 
-                                        console.log('_row_id_number',_row_id_number,  ' _field_name_number',   _field_name_number)
+
+							function extra_field_operation(){
+
+
+										
+
+												//console.log('extra field operation starting.....')
+
+											
+													var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
+													
+													var _existing_field = 75   
+													var _total_extra_field = 50
+													var _index = _total_extra_field + _existing_field
+
+													
+
+													for (i = 1; i <=_total_extra_field; i++) {
+								
+														
+
+															row_id = 'field_row_'+ (_index -i);
+															row_element = document.getElementById(row_id)
+
+
+															row_id_engineering_estimate = 'field_row_engineering_estimate_'+ (_index -i);
+                                                            row_element_engineering_estimate = document.getElementById(row_id_engineering_estimate)
+                                                                     
+
+															row_id_change_order = 'field_row_change_order_'+ (_index -i);
+                                                            row_element_change_order = document.getElementById(row_id_change_order)
+
+
+
+
+
+															extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
+
+															extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
+
+
+															//console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
+
+
+
+														if (extra_field_name_text_field.length == 0){
+
+                                                           
+                                                                     if ( i == _total_extra_field) {
+
+																		 // first extra field row, 1
+                                                                         show_next_row(( _index-i), (_total_extra_field -i + 1) )
+																		 break; // break for loop
+
+																	 } else {
+
+
+																		 // Not first extra field row
+																		//	console.log('hide extra field row id .....', row_id)
+
+																			row_element.style.display = "none";
+
+
+																			row_element_engineering_estimate.style.display = "none";
+																			row_element_change_order.style.display = "none";
+
+																			
+																	 }
+
+														} else {
+
+															    // the last row, do not need show next row 
+
+																if ((_total_extra_field -i + 1) < _total_extra_field ){
+
+																	// recursive call 
+																	
+																	show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
+																
+
+																     break;  // break for loop, we need the last not empty field.
+																} 
+
+													    }
+
+
+														
+													}//for
+
+
+
+
+
+
+
+
+                             
+                          //    ********* recursive function, must place inside parent function extra_field_operation()  **********
+						  
+						  
+						     function show_next_row(_row_id_number, _field_name_number){
+
+
+                                        //console.log('_row_id_number',_row_id_number,  ' _field_name_number',   _field_name_number)
 
 												// we need show last empty row as place holder
 												row_id = 'field_row_'+ _row_id_number;
@@ -9479,63 +9602,21 @@ return false;
 
 
 						  }
+                          //    ********* end ********* recursive function, must place inside parent function extra_field_operation()  **********
 
 
 
-							function extra_field_operation(){
-
-
-										
-
-												//console.log('extra field operation starting.....')
-
-											
-													var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
-													
-													var _existing_field = 75   
-													var _total_extra_field = 50
-													var _index = _total_extra_field + _existing_field
-
-													
-
-													for (i = 1; i <= _total_extra_field; i++) {
-								
-														
-
-															row_id = 'field_row_'+ (_index -i);
-															row_element = document.getElementById(row_id)
-
-															extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
-
-															extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
-
-
-															console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
 
 
 
-														if (extra_field_name_text_field.length == 0){
-
-																			console.log('hide extra field row id .....', row_id)
-
-																			row_element.style.display = "none";
 
 
-														} else {
 
-																if ((_total_extra_field -i + 1) < _total_extra_field ){
 
-																	// recursive call 
-																	show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
-																}
 
-																break;  // break for loop, we need the last not empty field.
+							} // function
 
-													}
-														
-													}//for
 
-							}
 								
 
 
@@ -9558,7 +9639,7 @@ return false;
             <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
 			       // comment out this line, all 50 extra field rows will show.
-				   // with this line, empty row will hide.
+				   // with this line, empty row will be hide, only 1 to last non-empty row will show.
                     extra_field_operation();
             <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
