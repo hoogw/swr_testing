@@ -2794,6 +2794,8 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 			</cfif>
 
 			
+
+
  <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
             <!--- </tr> --->
 
@@ -7779,14 +7781,33 @@ function submitForm5() {
 			</cfif>
 		</cfloop>
 		
-		<cfloop index="i" from="1" to="10">
+		<cfloop index="i" from="1" to="50">
 			var as = $('#chr(35)#ass_EXTRA_FIELD_#i#_name').val();
 			$('#chr(35)#EXTRA_FIELD_#i#_name').val(as);
 			$('#chr(35)#co_EXTRA_FIELD_#i#_name').val(as);
 			var as = $('#chr(35)#ass_EXTRA_FIELD_#i#_units').val();
 			$('#chr(35)#EXTRA_FIELD_#i#_units').val(as);
 			$('#chr(35)#co_EXTRA_FIELD_#i#_units').val(as);
+
+
+	
+
 		</cfloop>
+
+
+
+
+
+            <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+                   // after save, need to sync the change between 3 forms,assessment form, engineering estimate, change order 
+
+				  
+				   //   1) assessment form :                     empty row will be hide, only 1 to last non-empty row will show.
+				   //   2) engineering estimate, change order:   empty row will be hide 
+
+                    extra_field_operation();
+            <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
 		
 		</cfoutput>
 		
@@ -9466,12 +9487,13 @@ return false;
 
 
 
+
 							function extra_field_operation(){
 
 
 										
 
-												//console.log('extra field operation starting.....')
+												console.log('extra field operation starting.....')
 
 											
 													var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
@@ -9481,6 +9503,33 @@ return false;
 													var _index = _total_extra_field + _existing_field
 
 													
+
+                                                   // must enforce to show all rows, before hide some of rows, 
+													for (i = 1; i <=_total_extra_field; i++) {
+                                           
+
+															row_id = 'field_row_'+ (_index -i);
+															row_element = document.getElementById(row_id)
+
+
+															row_id_engineering_estimate = 'field_row_engineering_estimate_'+ (_index -i);
+                                                            row_element_engineering_estimate = document.getElementById(row_id_engineering_estimate)
+                                                                     
+
+															row_id_change_order = 'field_row_change_order_'+ (_index -i);
+                                                            row_element_change_order = document.getElementById(row_id_change_order)
+
+
+															row_element.style.display = "table-row";
+															row_element_engineering_estimate.style.display = "table-row";
+															row_element_change_order.style.display = "table-row";
+
+
+													}//for
+
+
+
+
 
 													for (i = 1; i <=_total_extra_field; i++) {
 								
@@ -9638,8 +9687,12 @@ return false;
 
             <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
-			       // comment out this line, all 50 extra field rows will show.
-				   // with this line, empty row will be hide, only 1 to last non-empty row will show.
+			       // comment out this line, all 50 extra field rows will show. (include 3 forms,assessment form, engineering estimate, change order )
+
+				   // with this line uncomment: 
+				   //   1) assessment form :                     empty row will be hide, only 1 to last non-empty row will show.
+				   //   2) engineering estimate, change order:   empty row will be hide 
+
                     extra_field_operation();
             <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
 
