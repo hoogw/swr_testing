@@ -1921,51 +1921,55 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 				</cfif>
 				<cfif cnt lt 3>
 				
-				<cfset bssdis = ""><cfif session.user_level is 0 AND session.user_power is 1><cfset bssdis = "disabled"></cfif><!--- Added for BSS bonus power --->
+				     <cfset bssdis = ""><cfif session.user_level is 0 AND session.user_power is 1><cfset bssdis = "disabled"></cfif><!--- Added for BSS bonus power --->
 				
-				<th class="left middle" style="height:30px;width:320px;">
-				
-					<table cellpadding="0" cellspacing="0" border="0"><tr>
-					<th class="left middle" style="padding:0px;width:180px;">#v#:</th>
-					<th class="left middle">
-						<cfset per=evaluate("getEst.#fld#_PERCENT")>
-						<cfset max=evaluate("getEst.#fld#_MAXIMUM")>
-						<table cellpadding="0" cellspacing="0" border="0"><tr>
-						<th class="left middle">
-						<select name="#fld#_percent" id="#fld#_percent" class="roundedsmall" style="width:50px;position:relative;top:1px;" tabindex="#tab1#" #bssdis#>
-						<cfset tab1 = tab1+1>
-						<cfif per is ""><cfset per = 0></cfif>
-						<cfset per = (per*100)>
+						<th class="left middle" style="height:30px;width:320px;">
 						
-						<cfloop index="i" from="1" to="10" step="1">
-							<cfset sel = ""><cfif i is per><cfset sel = "selected"></cfif>
-							<cfif cnt gt 1>
-								<cfif per is 0 AND i is 1><cfset sel = "selected"></cfif>
-							<cfelse>
-								<cfif per is 0 AND i is 5><cfset sel = "selected"></cfif>
-							</cfif>
-							<option value="#i/100#" #sel#>#i#%</option>
-						</cfloop>
-						<cfset sel = ""><cfif per lt 0><cfset sel = "selected"></cfif>
-							<option value="-1" #sel#>Max</option>
-						</select>
-						</th>
-						<th class="left middle">
-						<cfif max is "">
-							<cfset max = 5000>
-							<cfif cnt gt 1><cfset max = 1000></cfif>
-						</cfif>
-						<input type="Text" name="#fld#_maximum" id="#fld#_maximum" value="#max#" 
-						style="position:relative;top:1px;width:55px;text-align:center;height:20px;" class="center roundedsmall" tabindex="#tab2#" #bssdis#>
-						</th>
-						<cfset tab2 = tab2+1>
-						</tr></table>
+							<table cellpadding="0" cellspacing="0" border="0">
+							
+									<tr>
+												<th class="left middle" style="padding:0px;width:180px;">#v#: </th>
+												<th class="left middle">
+													<cfset per=evaluate("getEst.#fld#_PERCENT")>
+													<cfset max=evaluate("getEst.#fld#_MAXIMUM")>
+													<table cellpadding="0" cellspacing="0" border="0"><tr>
+													<th class="left middle">
+													<select name="#fld#_percent" id="#fld#_percent" class="roundedsmall" style="width:50px;position:relative;top:1px;" tabindex="#tab1#" #bssdis#>
+													<cfset tab1 = tab1+1>
+													<cfif per is ""><cfset per = 0></cfif>
+													<cfset per = (per*100)>
+													
+													<cfloop index="i" from="1" to="10" step="1">
+														<cfset sel = ""><cfif i is per><cfset sel = "selected"></cfif>
+														<cfif cnt gt 1>
+															<cfif per is 0 AND i is 1><cfset sel = "selected"></cfif>
+														<cfelse>
+															<cfif per is 0 AND i is 5><cfset sel = "selected"></cfif>
+														</cfif>
+														<option value="#i/100#" #sel#>#i#%</option>
+													</cfloop>
+													<cfset sel = ""><cfif per lt 0><cfset sel = "selected"></cfif>
+														<option value="-1" #sel#>Max</option>
+													</select>
+													</th>
+													<th class="left middle">
+													<cfif max is "">
+														<cfset max = 5000>
+														<cfif cnt gt 1><cfset max = 1000></cfif>
+													</cfif>
+													<input type="Text" name="#fld#_maximum" id="#fld#_maximum" value="#max#" 
+													style="position:relative;top:1px;width:55px;text-align:center;height:20px;" class="center roundedsmall" tabindex="#tab2#" #bssdis#>
+													</th>
+													<cfset tab2 = tab2+1>
+													</tr></table>
+													
+												
+												</th>
+									</tr>
+							
+							</table>
 						
-					
-					</th>
-					</tr></table>
-				
-				</th>
+						</th>
 				<cfelse>
 				
 					<cfif find("EXTRA_FIELD",column_name,"1") gt 0>
@@ -1974,7 +1978,7 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 						<cfset n = replace(n,'"',"&quot;","ALL")>
 						<th class="left middle" style="height:30px;width:320px;">
 							<table cellpadding="0" cellspacing="0" border="0"><tr>
-							<th class="left middle" style="padding:0px;width:65px;">#v#:</th>
+							<th class="left middle" style="padding:0px;width:65px;">  #v#: </th>
 							<th class="left middle">
 							<cfset xx = 245><cfif len(column_name) is 20><cfset xx = 240></cfif>
 							<input type="Text" name="#fld#_name" id="#fld#_name" value="#n#" 
@@ -1985,7 +1989,37 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 						</th>
 						
 					<cfelse>
-						<th class="left middle" style="height:30px;width:320px;">#v#:</th>
+
+
+                   <!--- --------   joe hu 3/3/2020 strike out some field name -------- form3 --- enginerring estimate ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:320px;"> #v#: </th>   --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:320px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:320px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form3 --- enginerring estimate ---- --->
+
+
+
+
+
+					
 					</cfif>
 				
 				
@@ -2569,7 +2603,41 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 					</th>
 					
 				<cfelse>
-					<th class="left middle" style="height:30px;width:320px;">#v#:</th>
+
+
+
+
+
+                <!--- --------   joe hu 3/3/2020 strike out some field name -------- form5 --- field assessment ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:320px;"> #v#: </th>   --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:320px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:320px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form5 --- field assessment ---- --->
+
+
+
+
+
+
+
 				</cfif>
 
 				<td class="frm left middle"><input type="Text" name="ass_#fld#_units" id="ass_#fld#_units" value="#u#" 
@@ -2830,7 +2898,43 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 					</th>
 					
 				<cfelse>
-					<th class="left middle" style="height:30px;width:315px;">#v#:</th>
+					
+
+
+
+
+
+
+
+                <!--- --------   joe hu 3/3/2020 strike out some field name -------- form6 --- change orders  ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:315px;">#v#:</th>  --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:315px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:315px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form6 --- change orders  ---- --->
+
+
+
+
+
+
 				</cfif>
 				
 				<cfset styl = "">
