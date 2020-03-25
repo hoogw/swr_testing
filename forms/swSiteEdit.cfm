@@ -273,6 +273,85 @@ SELECT id FROM tblSites WHERE location_no =  #getMaxSite.location_no#
 </cfquery>
 </cfif>
 
+
+<!--- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->
+
+  <!--- Get previous and next site base on current search results --->
+
+    	<cfset searchResult = session.siteQuery>
+
+       <!--- for Coldfusion 2016 and later, use ValueArray() --->
+		 <!--- <cfset searchResultArrayList=ValueArray(searchResult,"Location_No") >  --->
+
+       <!--- for Coldfusion 2011 and ealier, ValueArray() not supported, must manully implement it   --->
+				<cfscript>
+
+						array function arrayFromQueryColumn( required query q,required string columnName )
+						{
+							var queryCount  =   arguments.q.recordcount;
+							var result  =   [];
+							for( var i=1; i LTE queryCount; i++ )
+							{
+								ArrayAppend( result,arguments.q[ arguments.columnName ][ i ] );
+							}
+							return result;
+						}
+
+						searchResultArrayList=arrayFromQueryColumn(searchResult,"Location_No");
+				</cfscript>
+
+
+
+   		<!--- remove comment to test to verify the array list is correct
+			<cfscript>
+				writeDump(searchResultArrayList)
+			</cfscript>
+     	
+
+            <cfloop array="#searchResultArrayList#" item="siteNo" index="siteNoIndex">
+			     <cfoutput>#siteNoIndex# :  #siteNo#  : #url.sid# </br></cfoutput>
+			</cfloop>
+        --->
+
+		<cfloop index="siteNoIndex" from="1" to="#ArrayLen(searchResultArrayList)#" >
+			<!---	<cfoutput>#searchResultArrayList[siteNoIndex]#</cfoutput>.--->
+
+             <cfif url.sid eq searchResultArrayList[siteNoIndex]>
+
+                  <cfif siteNoIndex eq 1>
+
+                         <cfset previousSiteNo = -1>
+                         <cfset nextSiteNo = searchResultArrayList[siteNoIndex + 1]>
+
+			         <cfelseif siteNoIndex eq ArrayLen(searchResultArrayList)>  
+
+                          <cfset previousSiteNo =  searchResultArrayList[siteNoIndex - 1]>
+
+                          <cfset nextSiteNo = -1>
+
+                      <cfelse>
+
+					         <cfset previousSiteNo =  searchResultArrayList[siteNoIndex - 1]>
+                             <cfset nextSiteNo = searchResultArrayList[siteNoIndex + 1]>
+
+          		  </cfif>
+
+             </cfif>
+
+		</cfloop>
+
+<!---
+			<cfoutput> Previous (#previousSiteNo#) -  current(#url.sid#)  -  Next(#nextSiteNo#)   </br></cfoutput>
+--->
+
+
+
+
+
+<!--- end --- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->
+
+
+
 <!--- Get min site --->
 <cfquery name="getMinSite" datasource="#request.sqlconn#" dbtype="ODBC">
 SELECT min(location_no) as location_no FROM tblSites WHERE location_no > #getSite.location_no# AND removed is null
@@ -359,9 +438,24 @@ SELECT * FROM tblChangeOrders WHERE location_no = #getSite.location_no#
 		  <!--- <cfif session.user_level gt 0> --->
 		  <cfset x = ""><cfif url.pid gt 0><cfset x = "&pid=" & url.pid></cfif>
 		  <!--- joe hu  7/17/2018 ----- add progressing loading sign ------ () --->
-		  <a  onclick='$(".overlay").show();' href="swSiteEdit.cfm?sid=#getMaxSite.id##x#&search=#search#">
-                    <img src="../images/arrow_left.png" width="20" height="29" title="Previous Site" id="leftarrow">
+
+
+
+<!--- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->
+	<!--- <a  onclick='$(".overlay").show();' href="swSiteEdit.cfm?sid=#getMaxSite.id##x#&search=#search#">--->
+	<cfif previousSiteNo neq -1>
+		  <a  onclick='$(".overlay").show();' href="swSiteEdit.cfm?sid=#previousSiteNo##x#&search=#search#"> 
+                <img src="../images/arrow_left.png" width="20" height="29" title="Previous Site" id="leftarrow">
           </a>
+
+	
+	</cfif>
+<!--- end ---- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->
+
+
+
+
+
 		  <!--- </cfif> --->
 		  </cfif>
 		  </td>
@@ -371,9 +465,22 @@ SELECT * FROM tblChangeOrders WHERE location_no = #getSite.location_no#
 		  <!--- <cfif session.user_level gt 0> --->
 		  <cfset x = ""><cfif url.pid gt 0><cfset x = "&pid=" & url.pid></cfif>
 		 <!--- joe hu  7/17/2018 ----- add progressing loading sign ------ (2) --->
-		  <a  onclick='$(".overlay").show();'  href="swSiteEdit.cfm?sid=#getMinSite.id##x#&search=#search#">
-              <img src="../images/arrow_right.png" width="20" height="29" title="Next Site" id="rightarrow">
-          </a>
+
+
+      <!--- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->
+		<!---  <a  onclick='$(".overlay").show();'  href="swSiteEdit.cfm?sid=#getMinSite.id##x#&search=#search#"> --->
+     	       
+		    <cfif nextSiteNo neq -1>		
+				<a  onclick='$(".overlay").show();'  href="swSiteEdit.cfm?sid=#nextSiteNo##x#&search=#search#">  
+                  <img src="../images/arrow_right.png" width="20" height="29" title="Next Site" id="rightarrow">
+                </a>
+			</cfif>
+	  <!--- end ---- joe hu  3/24/2020 ----- left right arrow re-designate to search result --------->			 
+			 
+
+
+			 
+			 
 		  <!--- </cfif> --->
 		  </td>
 		  </cfif>

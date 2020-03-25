@@ -868,16 +868,19 @@ function submitForm() {
 	  data: frm,
 	  success: function(data) { 
 	  	data = jQuery.parseJSON(trim(data));
-		//console.log("data---");
-	  	//console.log(data);
+		console.log("data---");
+	  	console.log(data);
 		var query = jQuery.parseJSON(data.QUERY);
-		//console.log("query=====");
-		//console.log(query);
+		console.log("query=====");
+		console.log(query);
 		if(data.RESULT != "Success") {
 			showMsg(data.RESULT,1);
 			return false;	
 		}
 		
+
+
+
 		
 		<!--- joe hu  7/17/2018 ----- add progressing loading sign ------ (2) --->
 	    
@@ -886,12 +889,21 @@ function submitForm() {
 				
 	   <!--- End ---- joe hu  7/17/2018 ----- add progressing loading sign ------ (2) --->
 		
+
+
+
+
+
 		
 		var sno; var ssfx; var sp; var sg; var sname; var saddr; var stype; var swo; var sid; var spid; var spry; var cd; var tc; var tcon; var eest; var ncurb; 
 		$.each(query.COLUMNS, function(i, item) {
 			switch (item) {
 			case "ID": sid = i; break;
+
+
 			case "LOCATION_NO": sno = i; break;
+
+
 			case "LOCATION_SUFFIX": ssfx = i; break;
 			case "PACKAGE_NO": sp = i; break;
 			case "PACKAGE_GROUP": sg = i; break;
@@ -939,7 +951,11 @@ function submitForm() {
 		items.push("<table align='center' bgcolor='white' cellspacing='2' cellpadding='2' border='0' style='width:100%;'>");
 		
 		if (query.DATA.length > 0) {
-			$.each(query.DATA, function(i, item) {
+
+
+
+		$.each(query.DATA, function(i, item) {
+			
 			
 				if (item[sno] == null) {item[sno] = "";}
 				if (item[ssfx] == null) {item[ssfx] = "";}
@@ -985,7 +1001,11 @@ function submitForm() {
 				var pkg = item[sg] + item[sp]; if (pkg != "") { pkg = item[sg] + " - " + item[sp]; }
 	
 				items.push("<tr>");
+				
 				items.push("<td style='width:29px;height:20px;' class='small center frm'><a href='' onclick='goToSite(" + item[sid] + "," + item[spid] + ");return false;'><img src='../Images/rep.gif' width='13' height='16' alt='Edit Package' title='Edit Package' style='position:relative;top:-1px;'></a></td>");
+				
+				
+				
 				items.push("<td style='width:34px;' class='small center frm'>" + item[sno] + item[ssfx]  + "</td>");
 				items.push("<td style='width:24px;' class='small center frm'>" + item[cd] + "</td>");
 				items.push("<td style='width:49px;' class='small center frm'>" + pkg + "</td>");
@@ -1011,8 +1031,12 @@ function submitForm() {
 				
 				<!---items.push("<td style='width:64px;' class='small center frm'>" + item[swo] + "</td>");  --->
 				items.push("</tr>");
-			
-			});
+
+
+						});
+					
+
+
 		}
 		else {
 			items.push("<td style='height:20px;' class='small center frm'>No Records Found</td>");
@@ -1033,6 +1057,13 @@ function submitForm() {
 		
 		$("#rcnt").html("Search Count: <strong>" + query.DATA.length + "</strong>");
 		
+
+
+
+
+
+
+	  
 	  }
 	});
 	

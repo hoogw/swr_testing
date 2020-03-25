@@ -1902,7 +1902,17 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 				</tr>
 			</cfif>
 			
-			<tr>
+			
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- <tr> --->
+
+			<!--- this is form3, engineering estimate --->
+			<tr id="field_row_engineering_estimate_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;width:25px;">#no#</th>
@@ -1911,51 +1921,55 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 				</cfif>
 				<cfif cnt lt 3>
 				
-				<cfset bssdis = ""><cfif session.user_level is 0 AND session.user_power is 1><cfset bssdis = "disabled"></cfif><!--- Added for BSS bonus power --->
+				     <cfset bssdis = ""><cfif session.user_level is 0 AND session.user_power is 1><cfset bssdis = "disabled"></cfif><!--- Added for BSS bonus power --->
 				
-				<th class="left middle" style="height:30px;width:320px;">
-				
-					<table cellpadding="0" cellspacing="0" border="0"><tr>
-					<th class="left middle" style="padding:0px;width:180px;">#v#:</th>
-					<th class="left middle">
-						<cfset per=evaluate("getEst.#fld#_PERCENT")>
-						<cfset max=evaluate("getEst.#fld#_MAXIMUM")>
-						<table cellpadding="0" cellspacing="0" border="0"><tr>
-						<th class="left middle">
-						<select name="#fld#_percent" id="#fld#_percent" class="roundedsmall" style="width:50px;position:relative;top:1px;" tabindex="#tab1#" #bssdis#>
-						<cfset tab1 = tab1+1>
-						<cfif per is ""><cfset per = 0></cfif>
-						<cfset per = (per*100)>
+						<th class="left middle" style="height:30px;width:320px;">
 						
-						<cfloop index="i" from="1" to="10" step="1">
-							<cfset sel = ""><cfif i is per><cfset sel = "selected"></cfif>
-							<cfif cnt gt 1>
-								<cfif per is 0 AND i is 1><cfset sel = "selected"></cfif>
-							<cfelse>
-								<cfif per is 0 AND i is 5><cfset sel = "selected"></cfif>
-							</cfif>
-							<option value="#i/100#" #sel#>#i#%</option>
-						</cfloop>
-						<cfset sel = ""><cfif per lt 0><cfset sel = "selected"></cfif>
-							<option value="-1" #sel#>Max</option>
-						</select>
-						</th>
-						<th class="left middle">
-						<cfif max is "">
-							<cfset max = 5000>
-							<cfif cnt gt 1><cfset max = 1000></cfif>
-						</cfif>
-						<input type="Text" name="#fld#_maximum" id="#fld#_maximum" value="#max#" 
-						style="position:relative;top:1px;width:55px;text-align:center;height:20px;" class="center roundedsmall" tabindex="#tab2#" #bssdis#>
-						</th>
-						<cfset tab2 = tab2+1>
-						</tr></table>
+							<table cellpadding="0" cellspacing="0" border="0">
+							
+									<tr>
+												<th class="left middle" style="padding:0px;width:180px;">#v#: </th>
+												<th class="left middle">
+													<cfset per=evaluate("getEst.#fld#_PERCENT")>
+													<cfset max=evaluate("getEst.#fld#_MAXIMUM")>
+													<table cellpadding="0" cellspacing="0" border="0"><tr>
+													<th class="left middle">
+													<select name="#fld#_percent" id="#fld#_percent" class="roundedsmall" style="width:50px;position:relative;top:1px;" tabindex="#tab1#" #bssdis#>
+													<cfset tab1 = tab1+1>
+													<cfif per is ""><cfset per = 0></cfif>
+													<cfset per = (per*100)>
+													
+													<cfloop index="i" from="1" to="10" step="1">
+														<cfset sel = ""><cfif i is per><cfset sel = "selected"></cfif>
+														<cfif cnt gt 1>
+															<cfif per is 0 AND i is 1><cfset sel = "selected"></cfif>
+														<cfelse>
+															<cfif per is 0 AND i is 5><cfset sel = "selected"></cfif>
+														</cfif>
+														<option value="#i/100#" #sel#>#i#%</option>
+													</cfloop>
+													<cfset sel = ""><cfif per lt 0><cfset sel = "selected"></cfif>
+														<option value="-1" #sel#>Max</option>
+													</select>
+													</th>
+													<th class="left middle">
+													<cfif max is "">
+														<cfset max = 5000>
+														<cfif cnt gt 1><cfset max = 1000></cfif>
+													</cfif>
+													<input type="Text" name="#fld#_maximum" id="#fld#_maximum" value="#max#" 
+													style="position:relative;top:1px;width:55px;text-align:center;height:20px;" class="center roundedsmall" tabindex="#tab2#" #bssdis#>
+													</th>
+													<cfset tab2 = tab2+1>
+													</tr></table>
+													
+												
+												</th>
+									</tr>
+							
+							</table>
 						
-					
-					</th>
-					</tr></table>
-				
-				</th>
+						</th>
 				<cfelse>
 				
 					<cfif find("EXTRA_FIELD",column_name,"1") gt 0>
@@ -1964,7 +1978,7 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 						<cfset n = replace(n,'"',"&quot;","ALL")>
 						<th class="left middle" style="height:30px;width:320px;">
 							<table cellpadding="0" cellspacing="0" border="0"><tr>
-							<th class="left middle" style="padding:0px;width:65px;">#v#:</th>
+							<th class="left middle" style="padding:0px;width:65px;">  #v#: </th>
 							<th class="left middle">
 							<cfset xx = 245><cfif len(column_name) is 20><cfset xx = 240></cfif>
 							<input type="Text" name="#fld#_name" id="#fld#_name" value="#n#" 
@@ -1975,7 +1989,37 @@ SELECT * FROM tblQCQuantity WHERE location_no = #getSite.location_no#
 						</th>
 						
 					<cfelse>
-						<th class="left middle" style="height:30px;width:320px;">#v#:</th>
+
+
+                   <!--- --------   joe hu 3/3/2020 strike out some field name -------- form3 --- enginerring estimate ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:320px;"> #v#: </th>   --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:320px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:320px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form3 --- enginerring estimate ---- --->
+
+
+
+
+
+					
 					</cfif>
 				
 				
@@ -2518,7 +2562,15 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 				</tr>
 			</cfif>
 
-			<tr>
+
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- <tr> --->
+
+			<!--- this is form5, field assessment --->
+			<tr id="field_row_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;width:25px;">#no#</th>
@@ -2551,7 +2603,41 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 					</th>
 					
 				<cfelse>
-					<th class="left middle" style="height:30px;width:320px;">#v#:</th>
+
+
+
+
+
+                <!--- --------   joe hu 3/3/2020 strike out some field name -------- form5 --- field assessment ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:320px;"> #v#: </th>   --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:320px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:320px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form5 --- field assessment ---- --->
+
+
+
+
+
+
+
 				</cfif>
 
 				<td class="frm left middle"><input type="Text" name="ass_#fld#_units" id="ass_#fld#_units" value="#u#" 
@@ -2775,7 +2861,19 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 				</tr>
 			</cfif>
 
-			<tr>
+			
+
+
+ <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+            <!--- </tr> --->
+
+			<!--- this is form6, change orders --->
+			<tr id="field_row_change_order_#no#">
+ <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
+
+
 				<cfset no = no+1>
 				<cfif left(fld,5) is "EXTRA">
 				<th class="center middle" style="height:30px;">#no#</th>
@@ -2800,7 +2898,43 @@ SELECT * FROM tblCurbRamps WHERE location_no = #getSite.location_no# AND Removed
 					</th>
 					
 				<cfelse>
-					<th class="left middle" style="height:30px;width:315px;">#v#:</th>
+					
+
+
+
+
+
+
+
+                <!--- --------   joe hu 3/3/2020 strike out some field name -------- form6 --- change orders  ---- --->
+
+                             <!--- original --->
+							<!---	<th class="left middle" style="height:30px;width:315px;">#v#:</th>  --->
+                             <!--- end ----  original --->
+
+
+
+							<cfquery name="getDefault" datasource="#request.sqlconn#" dbtype="ODBC">
+								SELECT Status FROM tblEstimateDefaults WHERE fieldname = '#fld#'
+								</cfquery>
+
+							<cfif evaluate("getDefault.Status") eq "strike">
+								
+										<th class="left middle" style="height:30px;width:315px;"> <strike>#v#: </strike></th>
+								<cfelse>
+							
+                                        <th class="left middle" style="height:30px;width:315px;"> #v#: </th>
+							          
+								</cfif>	  
+
+
+					 <!--- ----- end ------ joe hu 3/3/2020 strike out some field name -------- form6 --- change orders  ---- --->
+
+
+
+
+
+
 				</cfif>
 				
 				<cfset styl = "">
@@ -7751,14 +7885,33 @@ function submitForm5() {
 			</cfif>
 		</cfloop>
 		
-		<cfloop index="i" from="1" to="10">
+		<cfloop index="i" from="1" to="50">
 			var as = $('#chr(35)#ass_EXTRA_FIELD_#i#_name').val();
 			$('#chr(35)#EXTRA_FIELD_#i#_name').val(as);
 			$('#chr(35)#co_EXTRA_FIELD_#i#_name').val(as);
 			var as = $('#chr(35)#ass_EXTRA_FIELD_#i#_units').val();
 			$('#chr(35)#EXTRA_FIELD_#i#_units').val(as);
 			$('#chr(35)#co_EXTRA_FIELD_#i#_units').val(as);
+
+
+	
+
 		</cfloop>
+
+
+
+
+
+            <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+                   // after save, need to sync the change between 3 forms,assessment form, engineering estimate, change order 
+
+				  
+				   //   1) assessment form :                     empty row will be hide, only 1 to last non-empty row will show.
+				   //   2) engineering estimate, change order:   empty row will be hide 
+
+                    extra_field_operation();
+            <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
 		
 		</cfoutput>
 		
@@ -9432,7 +9585,200 @@ return false;
 
      <cfoutput>
 	 
-	 
+	             <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+
+
+
+
+
+							function extra_field_operation(){
+
+
+										
+
+												console.log('extra field operation starting.....')
+
+											
+													var   i, row_id, row_element,  extra_field_name_id,  extra_field_name_text_field , extra_field_text_input_element;  
+													
+													var _existing_field = 75   
+													var _total_extra_field = 50
+													var _index = _total_extra_field + _existing_field
+
+													
+
+                                                   // must enforce to show all rows, before hide some of rows, 
+													for (i = 1; i <=_total_extra_field; i++) {
+                                           
+
+															row_id = 'field_row_'+ (_index -i);
+															row_element = document.getElementById(row_id)
+
+
+															row_id_engineering_estimate = 'field_row_engineering_estimate_'+ (_index -i);
+                                                            row_element_engineering_estimate = document.getElementById(row_id_engineering_estimate)
+                                                                     
+
+															row_id_change_order = 'field_row_change_order_'+ (_index -i);
+                                                            row_element_change_order = document.getElementById(row_id_change_order)
+
+
+															row_element.style.display = "table-row";
+															row_element_engineering_estimate.style.display = "table-row";
+															row_element_change_order.style.display = "table-row";
+
+
+													}//for
+
+
+
+
+
+													for (i = 1; i <=_total_extra_field; i++) {
+								
+														
+
+															row_id = 'field_row_'+ (_index -i);
+															row_element = document.getElementById(row_id)
+
+
+															row_id_engineering_estimate = 'field_row_engineering_estimate_'+ (_index -i);
+                                                            row_element_engineering_estimate = document.getElementById(row_id_engineering_estimate)
+                                                                     
+
+															row_id_change_order = 'field_row_change_order_'+ (_index -i);
+                                                            row_element_change_order = document.getElementById(row_id_change_order)
+
+
+
+
+
+															extra_field_name_id = 'ass_EXTRA_FIELD_' + (_total_extra_field -i + 1) + '_name';
+
+															extra_field_name_text_field = document.getElementById(extra_field_name_id).value;
+
+
+															//console.log(' extra field value >> ', extra_field_name_id, extra_field_name_text_field, extra_field_name_text_field.length)
+
+
+
+														if (extra_field_name_text_field.length == 0){
+
+                                                           
+                                                                     if ( i == _total_extra_field) {
+
+																		 // first extra field row, 1
+                                                                         show_next_row(( _index-i), (_total_extra_field -i + 1) )
+																		 break; // break for loop
+
+																	 } else {
+
+
+																		 // Not first extra field row
+																		//	console.log('hide extra field row id .....', row_id)
+
+																			row_element.style.display = "none";
+
+
+																			row_element_engineering_estimate.style.display = "none";
+																			row_element_change_order.style.display = "none";
+
+																			
+																	 }
+
+														} else {
+
+															    // the last row, do not need show next row 
+
+																if ((_total_extra_field -i + 1) < _total_extra_field ){
+
+																	// recursive call 
+																	
+																	show_next_row(( _index-i + 1), (_total_extra_field -i + 1 + 1) )
+																
+
+																     break;  // break for loop, we need the last not empty field.
+																} 
+
+													    }
+
+
+														
+													}//for
+
+
+
+
+
+
+
+
+                             
+                          //    ********* recursive function, must place inside parent function extra_field_operation()  **********
+						  
+						  
+						     function show_next_row(_row_id_number, _field_name_number){
+
+
+                                        //console.log('_row_id_number',_row_id_number,  ' _field_name_number',   _field_name_number)
+
+												// we need show last empty row as place holder
+												row_id = 'field_row_'+ _row_id_number;
+												row_element = document.getElementById(row_id)
+
+
+												// row_element.style.display = "inline"; // not work
+												row_element.removeAttribute("style");
+
+
+
+												//  row_element text input field  add onclick event listener......
+
+												extra_field_name_id = 'ass_EXTRA_FIELD_' + _field_name_number + '_name';
+
+												extra_field_text_input_element = document.getElementById(extra_field_name_id);
+
+
+											    extra_field_text_input_element.addEventListener(
+																								"click", 
+												
+																								function (event) {
+
+                                                                                      if (_field_name_number < _total_extra_field ){
+                                                                                        show_next_row((_row_id_number+1), (_field_name_number +1))
+																					  }
+
+
+
+																								});
+
+
+						  }
+                          //    ********* end ********* recursive function, must place inside parent function extra_field_operation()  **********
+
+
+
+
+
+
+
+
+
+
+
+							} // function
+
+
+								
+
+
+
+                 <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+				 
+
+
  
 	 // document ready 
          // $(function() {
@@ -9440,8 +9786,36 @@ return false;
 									   
 									   
 									   
-			     console.log(" ---- doc.ready  ------")
+			     console.log(" ---- doc.ready   start ------")
+
+
+            <!--- ------------ joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
+			       // comment out this line, all 50 extra field rows will show. (include 3 forms,assessment form, engineering estimate, change order )
+
+				   // with this line uncomment: 
+				   //   1) assessment form :                     empty row will be hide, only 1 to last non-empty row will show.
+				   //   2) engineering estimate, change order:   empty row will be hide 
+
+                    extra_field_operation();
+            <!--- ------------ end ----------  joe hu ------ 12/9/19  ---------- extra field operation ---------------  --->
+
 				 
+              
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				<cfloop index="i" from="1" to="#lngth1#">
 					<cfloop index="j" from="1" to="#lngth2#">
 						$( "#chr(35)#trspecies_#i#_#j#" ).autocomplete({ source: arrSpecies });
@@ -9574,7 +9948,7 @@ return false;
 						   
 						   
 						   
-						     console.log(" doc.ready ")
+						     console.log(" ..... doc.ready  end ..........")
 							 
 							 
 							 

@@ -4711,6 +4711,10 @@
 					<cfset tree = j>
 					<cfset tpdia = evaluate("tpdia_" & i & "_" & j)>
 					<cfset tppidt = evaluate("tppidt_" & i & "_" & j)>
+                    
+                    <cfset tpadt = evaluate("tpadt_" & i & "_" & j)>
+                    
+                    
 					<cfset tptrdt = evaluate("tptrdt_" & i & "_" & j)>
 					<cfset tpswdt = evaluate("tpswdt_" & i & "_" & j)>
 					<cfset tpewdt = evaluate("tpewdt_" & i & "_" & j)>
@@ -4751,6 +4755,11 @@
 					<cfset tpnote = evaluate("tpnote_" & i & "_" & j)>
 					
 					<cfif trim(tppidt) is ""><cfset tppidt = "NULL"></cfif>
+                    <cfif trim(tpadt) is ""><cfset tpadt = "NULL"></cfif>
+                    
+                    
+                    
+                    
 					<cfif trim(tptrdt) is ""><cfset tptrdt = "NULL"></cfif>
 					<cfif trim(tpswdt) is ""><cfset tpswdt = "NULL"></cfif>
 					<cfif trim(tpewdt) is ""><cfset tpewdt = "NULL"></cfif>
@@ -4793,6 +4802,18 @@
 						<cfset dt = createdate(arrDT[3],arrDT[1],arrDT[2])>
 						<cfset tppidt = createODBCDate(dt)>
 					</cfif>
+                    
+                    
+                    
+                    <cfif tpadt is not "NULL">
+						<cfset arrDT = listtoarray(tpadt,"/")>
+						<cfset dt = createdate(arrDT[3],arrDT[1],arrDT[2])>
+						<cfset tpadt = createODBCDate(dt)>
+					</cfif>
+                    
+                    
+                    
+                    
 					<cfif tptrdt is not "NULL">
 						<cfset arrDT = listtoarray(tptrdt,"/")>
 						<cfset dt = createdate(arrDT[3],arrDT[1],arrDT[2])>
@@ -4821,6 +4842,11 @@
 						    <cfif trim(sirdt) is not "NULL">SIR_Date,</cfif>
 						    <cfif trim(tpdia) is not "NULL">Tree_Box_Size,</cfif>
 						    <cfif trim(tppidt) is not "NULL">Permit_Issuance_Date,</cfif>
+                            
+                            
+                             <cfif trim(tpadt) is not "NULL">Assigned_Date,</cfif>
+                            
+                            
 							<cfif trim(tptrdt) is not "NULL">Tree_Planting_Date,</cfif>
 							<cfif trim(tpswdt) is not "NULL">Start_Watering_Date,</cfif>
 							<cfif trim(tpewdt) is not "NULL">End_Watering_Date,</cfif>
@@ -4865,6 +4891,9 @@
 						    <cfif trim(sirdt) is not "NULL">#sirdt#,</cfif>
 						    <cfif trim(tpdia) is not "NULL">#tpdia#,</cfif>
 						    <cfif trim(tppidt) is not "NULL">#tppidt#,</cfif>
+                            
+                            <cfif trim(tpadt) is not "NULL">#tpadt#,</cfif>
+                            
 							<cfif trim(tptrdt) is not "NULL">#tptrdt#,</cfif>
 							<cfif trim(tpswdt) is not "NULL">#tpswdt#,</cfif>
 							<cfif trim(tpewdt) is not "NULL">#tpewdt#,</cfif>
@@ -4911,6 +4940,10 @@
 						SIR_Date = <cfif sirdt is "NULL">NULL<cfelse>#sirdt#</cfif>,
 						Tree_Box_Size = <cfif tpdia is "NULL">NULL<cfelse>#tpdia#</cfif>,
 						Permit_Issuance_Date = <cfif tppidt is "NULL">NULL<cfelse>#tppidt#</cfif>,
+                        
+                        
+                        Assigned_Date = <cfif tpadt is "NULL">NULL<cfelse>#tpadt#</cfif>,
+                        
 						Tree_Planting_Date = <cfif tptrdt is "NULL">NULL<cfelse>#tptrdt#</cfif>,
 						Start_Watering_Date = <cfif tpswdt is "NULL">NULL<cfelse>#tpswdt#</cfif>,
 						End_Watering_Date = <cfif tpewdt is "NULL">NULL<cfelse>#tpewdt#</cfif>,
